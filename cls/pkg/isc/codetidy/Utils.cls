@@ -209,7 +209,7 @@ ClassMethod Configure() As %Status
 	do ##class(%Prompt).GetYesNo("Look for common mistakes/inefficiencies?", .result, .help)
 	if result = 1 {
 		set help = "Whether or not to automatically apply the warnings from ISTParse."
-		do ##class(%Prompt).GetYesNo("Fix such issues automtaically?", .result, .help)
+		do ##class(%Prompt).GetYesNo("Fix such issues automatically?", .result, .help)
 		if result = 1 {
 			set @..#ISTPARSEGLOBAL = "auto"
 		} else {
