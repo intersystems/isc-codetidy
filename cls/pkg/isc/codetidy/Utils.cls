@@ -184,13 +184,13 @@ ClassMethod Configure() As %Status
 {
 	write !, "To access help (for formatting of settings, etc.) enter ?", !
 	set result = 1
-	set help = "Whether files should be formatted when they are saved."
+	set help = "Whether files should be formatted automatically when they are saved."
 	do ##class(%Prompt).GetYesNo("Format on save?", .result, .help)
 	set @..#FORMATONSAVEGLOBAL = result
 
 	set result = 0
-	set help = "Whether the document parameters, properties, methods, etc. should be resequenced according to TrakCare standards."
-	do ##class(%Prompt).GetYesNo("Resequence the document?", .result, .help)
+	set help = "Whether class members should be resequenced to follow the order: properties/parameters, indices, methods/queries, triggers."
+	do ##class(%Prompt).GetYesNo("Resequence class members?", .result, .help)
 	set @..#RESEQUENCEGLOBAL = result
 
 	set result = 1
@@ -205,11 +205,11 @@ ClassMethod Configure() As %Status
 	set @..#INDENTSTRINGGLOBAL = $Case(result,"TAB":$c(9),:result)
 
 	set result = 1
-	set help = "ISTParse can help identify common coding mistakes and help to fix them."
-	do ##class(%Prompt).GetYesNo("Use ISTParse?", .result, .help)
+	set help = "Identify common coding inefficiencies and mistakes and help to fix them."
+	do ##class(%Prompt).GetYesNo("Look for common mistakes/inefficiencies?", .result, .help)
 	if result = 1 {
 		set help = "Whether or not to automatically apply the warnings from ISTParse."
-		do ##class(%Prompt).GetYesNo("Use ISTParse's autotweak?", .result, .help)
+		do ##class(%Prompt).GetYesNo("Fix such issues automtaically?", .result, .help)
 		if result = 1 {
 			set @..#ISTPARSEGLOBAL = "auto"
 		} else {
@@ -221,18 +221,18 @@ ClassMethod Configure() As %Status
 
 	set result = 1
 	set help = "CodeTidy expands commands, functions, and variables as well as making capitilization the same throughout."
-	do ##class(%Prompt).GetYesNo("Run CodeTidy?", .result, .help)
+	do ##class(%Prompt).GetYesNo("Enforce consistent command/function/system variable case?", .result, .help)
 	set @..#CODETIDYGLOBAL = result
 	if result = 1 {
 		set result = 0
-		set help = "Whether to capitalize the first letter in commands, system functions, and system variables."
-		do ##class(%Prompt).GetYesNo("Use capital commands, system functions, and system variables?", .result, .help)
+		set help = "Whether to use pascal case in commands, system functions, and system variables. If not chosen, will use lower case."
+		do ##class(%Prompt).GetYesNo("Use pascal case commands, system functions, and system variables?", .result, .help)
 		set @..#USECAPITALSGLOBAL = result
 	}
 	
 	set result = 0
 	set help = "Whether or not to replace all comments with macro (#;) comments"
-	do ##class(%Prompt).GetYesNo("Use macro comments?", .result, .help)
+	do ##class(%Prompt).GetYesNo("Convert all comments to macro (#;) comments?", .result, .help)
 	set @..#USEMACROCOMMENTSGLOBAL = result
 	
 	set result = 0
