@@ -694,14 +694,12 @@ ClassMethod CheckAll()
 /// Scan all classes in coded packages
 ClassMethod CheckClasses()
 {
-	for tPackage="Instrument","TC","Tools","UnitTest","User","XML","diagram","epr","web","websys" {
+	for tPackage="Instrument","TC","Tools","UnitTest","User","XML","diagram","epr","web"{
 		set clsName=tPackage
 		for  {
 			set clsName=$order(^oddDEF(clsName))
 			if $piece(clsName,".",1)'=tPackage quit
-			
-			if $piece(clsName,".",1,2)="websys.JS" continue
-			
+						
 			do ..Class(clsName,0)
 		}
 	}

@@ -58,7 +58,7 @@ ClassMethod Run(pInternalName As %String, pOnlyIfInSourceControl As %Boolean = 0
 				do ##class(pkg.isc.codetidy.Assistant).ESLint(pInternalName)
 			}
 		}
-		// Run all TrakCare formatting tools for classes and mac routines
+		// Run all formatting tools for classes and mac routines
 		elseif (fileExtension = "cls") || (fileExtension = "mac") {
 			// Determine if the class should be formatted
 			set shouldNotFormat = 0
@@ -484,4 +484,3 @@ ClassMethod GetESLintConfig() As %String
 }
 
 }
-

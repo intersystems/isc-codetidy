@@ -103,7 +103,6 @@ pkg.isc.codetidy.CodeTidy^INC^^^0
 #define SQLODBCfunctionname "E"
 #define SQLAggregatefunctionname "F"
 .
-/// from TrakCare webcommon.inc:
 #define IsIRIS ($system.Version.GetProduct()["IRIS")
 .
 #if $$$IsIRIS
@@ -120,9 +119,6 @@ pkg.isc.codetidy.CodeTidy^INC^^^0
 	#define libDatabase "IRISLIB"
 	///
 	#define sysDatabase "IRISSYS"
-	
-	///
-	#define tkEncodeBroker(%val) $$$cspEncodeBroker(%session.Key,$listbuild(%val))
 	
 	///
 	#define exportAttribGenerator "IRIS"
@@ -144,11 +140,7 @@ pkg.isc.codetidy.CodeTidy^INC^^^0
 	///
 	#define libDatabase "CACHELIB"
 	///
-	#define sysDatabase "CACHESYS"
-	
-	///
-	#define tkEncodeBroker(%val) ##class(websys.Page).Encrypt($listbuild(%val))
-	
+	#define sysDatabase "CACHESYS"	
 	///
 	#define exportAttribGenerator "Cache"
 	///
