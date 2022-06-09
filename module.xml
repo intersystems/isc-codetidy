@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="IRIS" version="26">
-<Document name="pkg.isc.codetidy.ZPM"><Module>
-  <Name>pkg.isc.codetidy</Name>
+<Document name="isc.codetidy.ZPM"><Module>
+  <Name>isc.codetidy</Name>
   <Version>1.0.0+snapshot</Version>
   <Packaging>module</Packaging>
   <Resource Name="pkg.isc.codetidy.PKG" />
-  <Resource Name="pkg.isc.codetidy.ISTCodeTidy.INC" />
+  <Resource Name="pkg.isc.codetidy.CodeTidy.INC" />
   <LifecycleClass>Module</LifecycleClass>
 </Module>
 </Document></Export>

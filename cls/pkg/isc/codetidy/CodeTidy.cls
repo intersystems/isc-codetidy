@@ -1,10 +1,10 @@
-Include (%occErrors, pkg.isc.codetidy.ISTCodeTidy)
+Include (%occErrors, pkg.isc.codetidy.CodeTidy)
 
 /// Experimental
 /// Code Cleanup
 /// Process class methods and MAC routines
 /// Expand / contract / upper  /lower / title case commands, special variables, intrinsic functions and embedded SQL keywords
-Class pkg.isc.codetidy.ISTCodeTidy Extends %RegisteredObject
+Class pkg.isc.codetidy.CodeTidy Extends %RegisteredObject
 {
 
 /// Process a document - main entry point
@@ -12,7 +12,7 @@ ClassMethod Document(InternalName) As %Status
 {
 	set status = $$$OK
 	
-	set type = ##class(pkg.isc.codetidy.ISTAssistant).FileType(InternalName)
+    set type = ##class(pkg.isc.codetidy.Assistant).FileType(InternalName)
 	set Name=$piece(InternalName,".",1,$length(InternalName,".")-1)
 	
 	if type = "class" {
@@ -763,4 +763,3 @@ ClassMethod CheckCSPs()
 }
 
 }
-

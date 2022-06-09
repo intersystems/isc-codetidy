@@ -1,6 +1,6 @@
 ^INC^Save for Source Control^^~Format=IRIS.S~^UTF8
 %RO
-pkg.isc.codetidy.ISTCodeTidy^INC^^^0
+pkg.isc.codetidy.CodeTidy^INC^^^0
 #define COSWhiteSpace 1
 #define COSLabel 3
 #define COSDots 4
@@ -166,11 +166,5 @@ pkg.isc.codetidy.ISTCodeTidy^INC^^^0
 ///
 #define inheritABSTRACT $$$comClassKeyGet(%classname,$$$cCLASSabstract)&&('$$$isGUIDENABLED(%classname))
 .
-#; Indicate target system is HealthShare Clinical Viewer rather than TrakCare
-#define IsHealthShare ##class(%Dictionary.ClassDefinition).%ExistsId("web.SDA3.Initialise")
-.
 #; Returns if an object is a native IRIS JSON object or array
 #define IsJSONObject(%object) ($isobject(%object) && (%object.%IsA("%DynamicAbstractObject")))
-
-
-

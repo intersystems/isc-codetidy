@@ -1,6 +1,6 @@
-Include (%occErrors, pkg.isc.codetidy.ISTCodeTidy)
+Include (%occErrors, pkg.isc.codetidy.CodeTidy)
 
-Class pkg.isc.codetidy.ISTSourceGen Extends %RegisteredObject [ Abstract ]
+Class pkg.isc.codetidy.SourceGen Extends %RegisteredObject [ Abstract ]
 {
 
 /// This method is run prior to opening a document in Studio.
@@ -120,7 +120,7 @@ ClassMethod ApplyStandards(InternalName As %String, IsInSourceControl As %Boolea
 	set Status = ..SetDoctorReportsAccessCtrl(InternalName, .Export)
 	if $$$ISERR(Status) quit Status
 	
-	set Status = ##class(pkg.isc.codetidy.ISTAssistant).IndentDocument(InternalName)
+	set Status = ##class(pkg.isc.codetidy.Assistant).IndentDocument(InternalName)
 	if $$$ISERR(Status) quit Status
 	#; Indent document does not return an indication of whether the file has changed.
 	#; Always export after indentation.
@@ -650,7 +650,7 @@ ClassMethod GenerateWebMessage(SourceControl As %Studio.SourceControl.Interface,
 	set Status = GeneratedParameter.%Save()
 	if $$$ISERR(Status) quit Status
 	
-	set Status=##class(pkg.isc.codetidy.ISTCodeTidy).Document(MessageInternalName)
+	set Status=##class(pkg.isc.codetidy.CodeTidy).Document(MessageInternalName)
 	if $$$ISERR(Status) quit Status
 	
 	#; Prevent actions from OnAfterSave firing further source control events.

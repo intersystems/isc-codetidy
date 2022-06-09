@@ -1,4 +1,4 @@
-Include (%occErrors, pkg.isc.codetidy.ISTCodeTidy)
+Include (%occErrors, pkg.isc.codetidy.CodeTidy)
 
 /// <ul><p>This class has functions to check for devaitions fom coding standards, debug globals and standardize indentation.
 /// Each of the functions works with the saved code of the current document. 
@@ -8,7 +8,7 @@ Include (%occErrors, pkg.isc.codetidy.ISTCodeTidy)
 /// <li>Find Traps : <method>FindTraps</method>
 /// <li>Automatic Indentation : <method>IndentDocument</method>
 /// <li>Automatic Tweak : <method>TweakDocument</method></ul>
-Class pkg.isc.codetidy.ISTAssistant Extends %Studio.Extension.Base [ ProcedureBlock ]
+Class pkg.isc.codetidy.Assistant Extends %Studio.Extension.Base [ ProcedureBlock ]
 {
 
 Parameter DOMAIN = "Studio";
@@ -1731,7 +1731,7 @@ Method CheckCode(Document As %String, Label As %String = "", Language As %String
                     #; There is a line in the ColorSyntaxStream with comma delimited components for each syntax element.
                     #; The first componenent is language name, the second component is terminal index, the third component
                     #; is the source code fragment and can contain commas, see %Library.SyntaxColor documentation and
-                    #; Studio.Extension.ISTCodeTidy for more information/reference
+                    #; Studio.Extension.CodeTidy for more information/reference
                     set lineElement = ColorSyntaxStream.ReadLine()
                     set elementLanguage = $piece(lineElement, ",", 1)
                     set elementType = $piece(lineElement, ",", 2)
@@ -1809,7 +1809,7 @@ Method CheckCode(Document As %String, Label As %String = "", Language As %String
 ClassMethod FindTraps(InternalName As %String) As %Status
 {
     write !!,"Searching for traps"
-    set sc = ##class(pkg.isc.codetidy.ISTParse).ParseDocument(InternalName, 0, .output)
+    set sc = ##class(pkg.isc.codetidy.Parse).ParseDocument(InternalName, 0, .output)
     write !,"Found "_+$get(output(".trapCount"))_" occurrence/s", !!
     quit $get(sc)
 }
@@ -1827,7 +1827,7 @@ ClassMethod FindTraps(InternalName As %String) As %Status
 ClassMethod TweakDocument(InternalName As %String) As %Status
 {
     write !!,"Applying automated tweaks"
-    set sc = ##class(pkg.isc.codetidy.ISTParse).ParseDocument(InternalName, 1, .output)
+    set sc = ##class(pkg.isc.codetidy.Parse).ParseDocument(InternalName, 1, .output)
     write !,"Found "_+$get(output(".trapCount"))_" occurrence/s", !!
     quit $get(sc)
 }

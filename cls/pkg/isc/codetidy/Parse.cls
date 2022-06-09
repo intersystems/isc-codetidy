@@ -1,10 +1,10 @@
-Include (%occStatus, pkg.isc.codetidy.ISTCodeTidy)
+Include (%occStatus, pkg.isc.codetidy.CodeTidy)
 
-Class pkg.isc.codetidy.ISTParse [ Abstract ]
+Class pkg.isc.codetidy.Parse [ Abstract ]
 {
 
 /// This Parameter is updated by Perforce
-Parameter SrcVer = "$Id: //projects/AppServices/OpenExchange/zpm/isc.codetidy/latest/cls/pkg/isc/codetidy/ISTParse.cls#2 $";
+Parameter SrcVer = "$Id: //projects/AppServices/OpenExchange/zpm/isc.codetidy/latest/cls/pkg/isc/codetidy/Parse.cls#2 $";
 
 ClassMethod ParseTrak(RemoveTraps As %Boolean = 0, ByRef Output As %String)
 {
@@ -369,7 +369,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 		if '..IsDebugLine(lineText, removeTraps) {
 			if removeTraps {
 				#; Apply standard brace usage.
-				set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+				set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 				set strippedCode = $zstrip(code, "<>W")
 				set strippedNextText = $zstrip(nextLineText,"<>W")
 				set output = lineText, writeOutput = 1
@@ -401,7 +401,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 					
 					set lineText = output
 					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 					set strippedCode = $zstrip(code, "<>W")
 					set strippedNextText = $zstrip(nextLineText,"<>W")
 				}
@@ -422,7 +422,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 					
 					set lineText = output
 					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 					set strippedCode = $zstrip(code, "<>W")
 				}
 				
@@ -439,7 +439,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 					
 					set lineText = output
 					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 					set strippedCode = $zstrip(code, "<>W")
 				}
 				
@@ -624,4 +624,3 @@ ClassMethod ParseFolder(Path As %String, RemoveTraps As %Boolean = 0, ByRef Outp
 }
 
 }
-
