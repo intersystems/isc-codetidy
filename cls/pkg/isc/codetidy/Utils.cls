@@ -68,8 +68,7 @@ ClassMethod Run(pInternalName As %String, pOnlyIfInSourceControl As %Boolean = 0
 			}
 			// Check the blacklist for everything else
 			else {
-				// Prevent AppS and UnitTest.AppS from running for now
-				set disabledList = $listbuild("AppS", "UnitTest.AppS") _ ..GetDisabledFiles()
+				set disabledList =..GetDisabledFiles()
 				set pointer = 0
 				while ($listnext(disabledList, pointer, filterName)) && (shouldNotFormat = 0) {
 					if ($extract(pInternalName, 1, $length(filterName)) = filterName) {

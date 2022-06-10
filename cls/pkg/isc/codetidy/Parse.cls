@@ -3,9 +3,6 @@ Include (%occStatus, pkg.isc.codetidy.CodeTidy)
 Class pkg.isc.codetidy.Parse [ Abstract ]
 {
 
-/// This Parameter is updated by Perforce
-Parameter SrcVer = "$Id: //projects/AppServices/OpenExchange/zpm/isc.codetidy/latest/cls/pkg/isc/codetidy/Parse.cls#2 $";
-
 ClassMethod ParseDocument(InternalName As %String, RemoveTraps As %Boolean = 0, ByRef Output As %String) As %Status
 {
 	set status = $$$OK
