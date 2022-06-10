@@ -1,81 +1,10 @@
-Include (%occStatus, pkg.isc.codetidy.ISTCodeTidy)
+Include (%occStatus, pkg.isc.codetidy.CodeTidy)
 
-Class pkg.isc.codetidy.ISTParse [ Abstract ]
+Class pkg.isc.codetidy.Parse [ Abstract ]
 {
 
 /// This Parameter is updated by Perforce
-Parameter SrcVer = "$Id: //projects/AppServices/OpenExchange/zpm/isc.codetidy/latest/cls/pkg/isc/codetidy/ISTParse.cls#2 $";
-
-ClassMethod ParseTrak(RemoveTraps As %Boolean = 0, ByRef Output As %String)
-{
-	kill Output
-	
-	#; Parse Classes
-	do ..ParseClasses(RemoveTraps, .Output)
-	
-	#; Parse Include files
-	do ..ParseRoutines("*.INC", RemoveTraps,  .Output)
-	
-	#; Parse Routines
-	do ..ParseRoutines("*.MAC", RemoveTraps, .Output)
-	
-	#; Parse Application
-	do ..ParseApp(RemoveTraps, .Output)
-	
-	set firstCol = 40
-	set secondCol = 10
-	
-	write !, $justify(+$get(Output(".fileCount"))_" files processed", firstCol)
-	write !, $justify(+$get(Output(".trapCount"))_" traps "_$select(RemoveTraps:"removed",1:"found"), firstCol)
-	write !
-}
-
-ClassMethod ParseClasses(RemoveTraps As %Boolean = 0, ByRef Output As %String)
-{
-	set resultSet=##class(%ResultSet).%New("%CompiledClass:ClassInfo")
-	set status = resultSet.Execute("%zzz")
-	if $$$ISOK(status) {
-		while resultSet.Next()  {
-			#; Current document resultSet.Data("Name")
-			#; resultSet.Data("Name")?1(1"epr.",1"HSView.",1"lab.",1"User.",1"web.",1"websys.",1"XML.").E
-			if resultSet.Data("Name")'?1(1"csp",1"csr",1"CSP",1"Ens",1"z",1"questionnaire",1"Custom",1"Report").E {
-				set status = ..ParseDocument(resultSet.Data("Name")_".CLS", RemoveTraps, .Output)
-				if $$$ISERR(status) quit  //
-			}
-		}
-	}
-	if $$$ISERR(status) do $system.OBJ.DisplayError(status)
-}
-
-ClassMethod ParseRoutines(spec As %String, RemoveTraps As %Boolean = 0, ByRef Output As %String)
-{
-	#; By using the StudioOpenDialog query we can restrict results to those
-	#; files that are not generated from other source.  For example, routines
-	#; that have been generated when compiling a class are not returned.
-	set resultSet=##class(%ResultSet).%New("%RoutineMgr:StudioOpenDialog")
-	#if $system.Version.GetMajor()>5
-		set status = resultSet.Execute(spec, , , 0, 1, 1, 0)
-	#else
-		set status = resultSet.Execute(spec, , , 0, 1, 1)
-	#endif
-	if $$$ISOK(status) {
-		while resultSet.Next()  {
-			#; Current document resultSet.Data("Name")
-			if ##class(%RoutineMgr).GetOther(resultSet.Data("Name"),resultSet.Data("Type"))="",resultSet.Data("Name")'?1(1"csp.",1"csr.",1"CSP",1"Ens",1"z",1"GCOM",1"CacheSql").E,resultSet.Data("Name")'?.E1".T"1N1"."3A {
-				set status = ..ParseDocument(resultSet.Data("Name"), RemoveTraps, .Output)
-				if $$$ISERR(status) quit  //
-			}
-		}
-	}
-	if $$$ISERR(status) do $system.OBJ.DisplayError(status)
-}
-
-ClassMethod ParseApp(RemoveTraps As %Boolean = 0, ByRef Output As %String)
-{
-	#; Get path to application files.
-	set lclPathToApp = $system.CSP.GetFileName($list(^websys.ConfigurationD(1),2))
-	do ..ParseFolder(lclPathToApp, RemoveTraps, .Output)
-}
+Parameter SrcVer = "$Id: //projects/AppServices/OpenExchange/zpm/isc.codetidy/latest/cls/pkg/isc/codetidy/Parse.cls#2 $";
 
 ClassMethod ParseDocument(InternalName As %String, RemoveTraps As %Boolean = 0, ByRef Output As %String) As %Status
 {
@@ -369,7 +298,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 		if '..IsDebugLine(lineText, removeTraps) {
 			if removeTraps {
 				#; Apply standard brace usage.
-				set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+				set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 				set strippedCode = $zstrip(code, "<>W")
 				set strippedNextText = $zstrip(nextLineText,"<>W")
 				set output = lineText, writeOutput = 1
@@ -401,7 +330,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 					
 					set lineText = output
 					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 					set strippedCode = $zstrip(code, "<>W")
 					set strippedNextText = $zstrip(nextLineText,"<>W")
 				}
@@ -422,7 +351,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 					
 					set lineText = output
 					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 					set strippedCode = $zstrip(code, "<>W")
 				}
 				
@@ -439,7 +368,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 					
 					set lineText = output
 					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.ISTAssistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
+					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
 					set strippedCode = $zstrip(code, "<>W")
 				}
 				
@@ -565,63 +494,4 @@ ClassMethod FileType(InternalName As %String) As %String [ Private ]
 	quit "other"
 }
 
-ClassMethod ParseFolder(Path As %String, RemoveTraps As %Boolean = 0, ByRef Output As %String) As %Status
-{
-	set resultSet = ##class(%ResultSet).%New("%File:FileSet")
-	set status = resultSet.Execute(Path,"*.*")
-	if $$$ISOK(status) {
-		while resultSet.Next() {
-			if resultSet.Data("Type") = "F" {
-				#; Current document resultSet.Data("ItemName")
-				#; Check for the file types that can contain the database debug write statements.
-				if $zconvert(resultSet.Data("ItemName"),"L")?.E1(1".csp",1".xml",1".rtn") {
-					set file = ##class(%File).%New(resultSet.Data("Name"))
-					set status = file.Open("R")
-					if status {
-						if RemoveTraps {
-							set outFile = ##class(%File).%New(resultSet.Data("Name")_".wknck")
-							set status = outFile.Open("WSN")
-						}
-						kill lineCount
-						if status {
-							do {
-								kill len
-								if $increment(lineCount)
-								set line = file.ReadLine(.len)
-								
-								if '..IsDebugLine(line) {
-									if len > -1 {
-										if RemoveTraps set status = outFile.WriteLine(line)
-									}
-								} else {
-									write !, resultSet.Data("ItemName")_"("_lineCount_"): "_$zstrip(line, "<W")
-									if $increment(Output(".trapCount"))
-								}
-							} while len > -1
-							
-							do file.Close()
-							if RemoveTraps {
-								do outFile.Close()
-								
-								do ##class(%File).Delete(file.Name)
-								do ##class(%File).Rename(outFile.Name, file.Name)
-							}
-							
-							if $increment(Output(".fileCount"))
-						}
-					}
-					
-					if $$$ISERR(status) {
-						do $system.Status.DisplayError(status)
-					}
-				}
-			} else {
-				do ..ParseFolder(resultSet.Data("Name"), RemoveTraps, .Output)
-			}
-		}
-	}
-	quit status
 }
-
-}
-

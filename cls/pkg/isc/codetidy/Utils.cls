@@ -11,7 +11,7 @@ Parameter INDENTSTRINGGLOBAL = "^Config(""CodeTidy"", ""indentString"")";
 
 /// Global should evaluate to either "auto" or "warn" to indicate
 /// whether the tweaks should be applied automatically or not.
-Parameter ISTPARSEGLOBAL = "^Config(""CodeTidy"", ""tweak"")";
+Parameter ParseGLOBAL = "^Config(""CodeTidy"", ""tweak"")";
 
 Parameter CODETIDYGLOBAL = "^Config(""CodeTidy"", ""codetidy"")";
 
@@ -55,10 +55,10 @@ ClassMethod Run(pInternalName As %String, pOnlyIfInSourceControl As %Boolean = 0
 			// exclude .min.js files and anything containing "jquery"
 			set isMinJS = ($extract(pInternalName, $length(pInternalName) - 6, *) = ".min.js")
 			if 'isMinJS {
-				do ##class(pkg.isc.codetidy.ISTAssistant).ESLint(pInternalName)
+				do ##class(pkg.isc.codetidy.Assistant).ESLint(pInternalName)
 			}
 		}
-		// Run all TrakCare formatting tools for classes and mac routines
+		// Run all formatting tools for classes and mac routines
 		elseif (fileExtension = "cls") || (fileExtension = "mac") {
 			// Determine if the class should be formatted
 			set shouldNotFormat = 0
@@ -94,22 +94,22 @@ ClassMethod Run(pInternalName As %String, pOnlyIfInSourceControl As %Boolean = 0
 			}
 			
 			write !, "Formatting "_pInternalName_"...", !
-			if ..GetISTParse() = "auto" {
-				do ##class(pkg.isc.codetidy.ISTAssistant).TweakDocument(pInternalName)
-			} elseif ..GetISTParse() = "warn" {
-				do ##class(pkg.isc.codetidy.ISTAssistant).FindTraps(pInternalName)
+			if ..GetParse() = "auto" {
+				do ##class(pkg.isc.codetidy.Assistant).TweakDocument(pInternalName)
+			} elseif ..GetParse() = "warn" {
+				do ##class(pkg.isc.codetidy.Assistant).FindTraps(pInternalName)
 			}
 			if ..GetResquence() {
-				do ##class(pkg.isc.codetidy.ISTSourceGen).ResequenceDocument(pInternalName)
+				do ##class(pkg.isc.codetidy.SourceGen).ResequenceDocument(pInternalName)
 			}
 			if ..GetCodeTidy() {
-				do ##class(pkg.isc.codetidy.ISTCodeTidy).Document(pInternalName)
+				do ##class(pkg.isc.codetidy.CodeTidy).Document(pInternalName)
 			}
 			if ..GetIndent() {
-				do ##class(pkg.isc.codetidy.ISTAssistant).IndentDocument(pInternalName)
+				do ##class(pkg.isc.codetidy.Assistant).IndentDocument(pInternalName)
 			}
 			
-			do sourceControl.GetSubExtension("pkg.isc.codetidy.ISTAssistant").CheckDocument(pInternalName)
+			do sourceControl.GetSubExtension("pkg.isc.codetidy.Assistant").CheckDocument(pInternalName)
 			
 			write !, "Done formatting.", !
 		}
@@ -208,15 +208,15 @@ ClassMethod Configure() As %Status
 	set help = "Identify common coding inefficiencies and mistakes and help to fix them."
 	do ##class(%Prompt).GetYesNo("Look for common mistakes/inefficiencies?", .result, .help)
 	if result = 1 {
-		set help = "Whether or not to automatically apply the warnings from ISTParse."
+		set help = "Whether or not to automatically apply the warnings from Parse."
 		do ##class(%Prompt).GetYesNo("Fix such issues automatically?", .result, .help)
 		if result = 1 {
-			set @..#ISTPARSEGLOBAL = "auto"
+			set @..#ParseGLOBAL = "auto"
 		} else {
-			set @..#ISTPARSEGLOBAL = "warn"
+			set @..#ParseGLOBAL = "warn"
 		}
 	} else {
-		set @..#ISTPARSEGLOBAL = ""
+		set @..#ParseGLOBAL = ""
 	}
 
 	set result = 1
@@ -280,7 +280,7 @@ ClassMethod SetupExtension() As %Status
 		}
 
 		set newSourceControlClass = "pkg.isc.codetidy.extension.Composite"
-		set codeTidyExtension = "pkg.isc.codetidy.ISTAssistant"
+		set codeTidyExtension = "pkg.isc.codetidy.Assistant"
 		
 		// Get the name of the current extension
 		set oldSourceControlClass = ##class(%Studio.SourceControl.Interface).SourceControlClassGet()
@@ -408,10 +408,10 @@ ClassMethod GetIndentString() As %String
 
 /// Returns the value from the global if it exists.
 /// Defaults to "auto"
-ClassMethod GetISTParse() As %String
+ClassMethod GetParse() As %String
 {
-	if $data(@..#ISTPARSEGLOBAL) {
-		quit @..#ISTPARSEGLOBAL
+	if $data(@..#ParseGLOBAL) {
+		quit @..#ParseGLOBAL
 	}
 	quit "auto"
 }
@@ -484,4 +484,3 @@ ClassMethod GetESLintConfig() As %String
 }
 
 }
-
