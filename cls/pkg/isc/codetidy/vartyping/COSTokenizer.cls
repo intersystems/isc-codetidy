@@ -10,7 +10,7 @@ Class pkg.isc.codetidy.vartyping.COSTokenizer
 {
 
 /// Returns an array of lists (per line) of tokens for a method's implementation
-ClassMethod GetMethodImplementation(pClass As %Dictionary.CacheClassname, pMethod As %Dictionary.CacheIdentifier, Output pTokens, pNamespace As %String) As %Status
+ClassMethod GetMethodImplementation(pClass As %Dictionary.Classname, pMethod As %Dictionary.Identifier, Output pTokens, pNamespace As %String) As %Status
 {
 	If $Data(pNamespace) {
 		New $Namespace

@@ -103,52 +103,15 @@ pkg.isc.codetidy.CodeTidy^INC^^^0
 #define SQLODBCfunctionname "E"
 #define SQLAggregatefunctionname "F"
 .
-#define IsIRIS ($system.Version.GetProduct()["IRIS")
-.
-#if $$$IsIRIS
-	///
-	#define sqlStorageClass "%Storage.SQL"
-	///
-	#define persistentStorageClass "%Storage.Persistent"
-	///
-	#define rawStringClass "%Library.RawString"
-	///
-	#define dictClassnameClass "%Dictionary.CacheClassname"
-	
-	///
-	#define libDatabase "IRISLIB"
-	///
-	#define sysDatabase "IRISSYS"
-	
-	///
-	#define exportAttribGenerator "IRIS"
-	///
-	#define exportAttribVersion "26"
-	
-	///
-	#define langObjectScript "objectscript"
-#else
-	///
-	#define sqlStorageClass "%Library.CacheSQLStorage"
-	///
-	#define persistentStorageClass "%Library.CacheStorage"
-	///
-	#define rawStringClass "%Library.CacheString"
-	///
-	#define dictClassnameClass "%Dictionary.Classname"
-	
-	///
-	#define libDatabase "CACHELIB"
-	///
-	#define sysDatabase "CACHESYS"	
-	///
-	#define exportAttribGenerator "Cache"
-	///
-	#define exportAttribVersion "22"
-	
-	///
-	#define langObjectScript "cache"
-#endif
+#define sqlStorageClass "%Storage.SQL"
+#define persistentStorageClass "%Storage.Persistent"
+#define rawStringClass "%Library.RawString"
+#define dictClassnameClass "%Dictionary.CacheClassname"
+#define libDatabase "IRISLIB"
+#define sysDatabase "IRISSYS"
+#define exportAttribGenerator "IRIS"
+#define exportAttribVersion "26"
+#define langObjectScript "objectscript"
 .
 #define storageName(%s) $$$comClassKeyGet(%s,$$$cCLASSstoragestrategy)
 ///

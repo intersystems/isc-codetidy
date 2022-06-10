@@ -2,7 +2,7 @@ Class pkg.isc.codetidy.vartyping.MethodsCalled
 {
 
 /// Returns all method calls in the method in pMethodCalls.
-ClassMethod GetMethodCalls(pClass As %Dictionary.CacheClassname, pMethod As %Dictionary.CacheIdentifier, pNamespace As %String, Output pMethodCalls) As %Status
+ClassMethod GetMethodCalls(pClass As %Dictionary.Classname, pMethod As %Dictionary.Identifier, pNamespace As %String, Output pMethodCalls) As %Status
 {
 	Set sc = $$$OK
 	Try {

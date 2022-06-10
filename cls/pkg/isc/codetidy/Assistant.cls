@@ -175,12 +175,10 @@ Method BuildAlertPatterns()
     set ..AlertPatterns($$$langObjectScript, $increment(cnt)) = $listbuild(".E1(1""$zconvert("",1""$zcvt("")1.ANP1""""""l"""""".E", "WARN", "Recommended to use macro '$$$lcase(%string)' to achieve lower case", "forEditsCheck") ##;noalert
     set ..AlertPatterns($$$langObjectScript, $increment(cnt)) = $listbuild(".E1(1""$zconvert("",1""$zcvt("")."" ""1""$zstrip(""1.ANP1""""""*p""""""2.P1(1"""""",?"""""",1""""""?,"""""")2.P1""""""u"""""".E", "WARN", "Recommended to use macro '$$$ALPHAUP(%val)' for this purpose", "forEditsCheck") ##;noalert
 
-    #; TODO: Incomplete pattern for using data in URLs
-    #; Set ..AlertPatterns("cache", $Increment(cnt)) = $lb(".E1""=""""_%request.get("".E1"")_""""&""", "WARN", "Use $ZConvert(var,""O"",""URL"") to ensure the data is valid for a URL") ##;noalert
+    #; JavaScript anti-patterns
     set ..AlertPatterns("javascript", $increment(cnt)) = $listbuild(".E1""document.body.onunload""."" ""1""="".E", "WARN", "Use addEventListener/attachEvent to avoid compromising timeout functionality") ##;noalert
     set ..AlertPatterns("javascript", $increment(cnt)) = $listbuild(".E1""for (""0.1""var ""1.AP1""=1;""1.AP1""<""1.AP1"".rows.length;""1.AP1""++)"".E", "WARN", "Use <=table.rows.length and check the row to handle table headers") ##;noalert
     set ..AlertPatterns("javascript", $increment(cnt)) = $listbuild(".E1"".parentelement"".E","WARN","Always use parentNode instead of parentElement") ##;noalert
-    set ..AlertPatterns("javascript", $increment(cnt)) = $listbuild(".E1""alert(""1.P.E","WARN","Check that your alert contains translated message") ##;noalert
     
     #; Optimisation available
     set ..AlertPatterns("generic", $increment(cnt)) = $listbuild(".E1""%request.get("".E", "PERF", "Use $Get(%request.Data(""X"",1)) to improve performance") ##;noalert
@@ -510,11 +508,6 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
         set status = file.Open("R")
         
         if $$$ISOK(status) {
-            #; TODO: Change CSP and CSR to use language 'csp' then
-            #;       add a specific section to IndentCodeLine to handle
-            #;       csp and perform code block detection.
-            #;       The IndentCodeLine can then call itself again with
-            #;       the code block language.
             set language = $case($zconvert($piece(fileName, ".", $length(fileName, ".")),"L"), "csp":$$$langObjectScript, "csr":$$$langObjectScript, "js":"javascript", "css":"stylesheet")
             
             #; Run through each line and build a new stream

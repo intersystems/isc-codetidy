@@ -3,7 +3,7 @@ Class pkg.isc.codetidy.vartyping.Variable Extends %RegisteredObject
 
 Property Object As %Boolean;
 
-Property Type As %Dictionary.CacheClassname;
+Property Type As %Dictionary.Classname;
 
 Property ContributingVariables As %List;
 
