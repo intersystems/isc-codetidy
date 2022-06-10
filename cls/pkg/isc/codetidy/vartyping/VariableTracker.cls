@@ -116,7 +116,6 @@ Method VarsInCommand(pTokens As %List)
 			}
 			Set nextToken = $ListGet(pTokens, i + 1)
 			Set isVariable = 1
-			// TODO: test GetRemainingAttributes and utilize it here
 			If nextToken = $ListBuild("COS", "Object dot operator", ".") {
 				Set isVariable = ..GetRemainingAttributes(pTokens, i + 1, .endIndex, .string)
 				If isVariable {
@@ -265,7 +264,6 @@ Method ParseDim(pTokens As %List)
 		} Else {
 			// quit if initial value is started
 			Quit:(value = "=")
-			// TODO: figure out what to do with list of and array of
 			Continue:($List(token, 2) = "Delimiter")
 			Set type = type _ value
 		}
