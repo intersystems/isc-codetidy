@@ -1,3 +1,4 @@
+/// Represents a variable in ObjectScript
 Class pkg.isc.codetidy.vartyping.Variable Extends %RegisteredObject
 {
 

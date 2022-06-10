@@ -1,3 +1,4 @@
+/// Utilties to transforms a list of ObjectScript tokens in various ways
 Class pkg.isc.codetidy.vartyping.TokenProcessors
 {
 

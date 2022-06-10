@@ -1,3 +1,4 @@
+/// For environments using CCR, this helps to automate CodeTidy configuration in a standard way
 Class pkg.isc.codetidy.CodeTidyCCREventHandler Extends %Studio.SourceControl.CCREventHandler
 {
 

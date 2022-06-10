@@ -1,6 +1,7 @@
 Include (%occErrors, pkg.isc.codetidy.CodeTidy)
 
-Class pkg.isc.codetidy.SourceGen Extends %RegisteredObject [ Abstract ]
+/// Supports reordering class members according to standards
+Class pkg.isc.codetidy.SourceGen Extends %RegisteredObject
 {
 
 ClassMethod ResequenceDocument(InternalName As %String, Export As %Boolean) As %Status

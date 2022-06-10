@@ -293,7 +293,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
                 // Get the tokens for each line so that the command can be determined
                 if (method.Language = $$$langObjectScript) || (method.Language = "") {
                     kill tokens
-                    $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.COSTokenizer).GetMethodImplementation(classDef.Name, method.Name, .tokens, $namespace))
+                    $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetMethodImplementation(classDef.Name, method.Name, .tokens, $namespace))
                     do method.Implementation.Rewind()
                 }
 
@@ -423,7 +423,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
             // Get the tokens for each line so that the command can be determined
             if (language = $$$langObjectScript) || (language = "") {
                 kill tokens
-                $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.COSTokenizer).GetRoutineImplementation(InternalName, .tokens, $namespace))
+                $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetRoutineImplementation(InternalName, .tokens, $namespace))
                 do routineDef.Code.Rewind()
             }
 

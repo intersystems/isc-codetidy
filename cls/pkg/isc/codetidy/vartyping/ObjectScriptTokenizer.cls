@@ -6,7 +6,7 @@
 /// <code>
 /// $ListBuild(language,type,text)
 /// </code>
-Class pkg.isc.codetidy.vartyping.COSTokenizer
+Class pkg.isc.codetidy.vartyping.ObjectScriptTokenizer
 {
 
 /// Returns an array of lists (per line) of tokens for a method's implementation

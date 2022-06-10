@@ -1,3 +1,4 @@
+/// Universal source control settings - specifically, how mapped resources are to be treated
 Class pkg.isc.codetidy.extension.UniversalSettings Extends pkg.isc.codetidy.extension.AbstractSettings
 {
 

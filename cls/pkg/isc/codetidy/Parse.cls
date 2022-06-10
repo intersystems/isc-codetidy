@@ -1,5 +1,6 @@
 Include (%occStatus, pkg.isc.codetidy.CodeTidy)
 
+/// Supports more complex operations in tweaking ObjectScript
 Class pkg.isc.codetidy.Parse [ Abstract ]
 {
 
@@ -70,7 +71,7 @@ ClassMethod ParseDocument(InternalName As %String, RemoveTraps As %Boolean = 0, 
 			set language = $case(routineDef.LanguageModeGet(),9:"basic",:"cache")
 			
 			if RemoveTraps set code = ##class(%Stream.TmpCharacter).%New()
-			do ##class(pkg.isc.codetidy.vartyping.COSTokenizer).GetRoutineImplementation(InternalName, .tokens, $namespace)
+			do ##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetRoutineImplementation(InternalName, .tokens, $namespace)
 			do ..ParseCode(InternalName, routineDef.Name, routineDef.Code, .Output, .code, "", .tokens)
 			
 			#; Replace the existing stream.

@@ -7,7 +7,7 @@ Class pkg.isc.codetidy.extension.Singleton Extends %RegisteredObject [ Abstract 
 Parameter NAMESPACESCOPE As BOOLEAN = 1;
 
 /// PPG in which to track references to the instance of this class
-Parameter PPG As STRING = "^||AppS.Singleton";
+Parameter PPG As STRING = "^||pkg.isc.codetidy.Singleton";
 
 /// Internal property to track the namespace in which this instance was created.
 Property %namespace As %String [ InitialExpression = {$Namespace}, Private, Transient ];

@@ -1,3 +1,4 @@
+/// Utility class to help parse ObjectScript commands
 Class pkg.isc.codetidy.vartyping.CommandParser Extends %RegisteredObject
 {
 
@@ -31,10 +32,10 @@ Property Postconditional As %List;
 /// class then this oref will be the one returned to the caller of %New method.
 /// pUserInputArgIndices is used when the a method is being called with user input in some of its arguments.
 /// The indices in this list are the argument indices that contain user input.
-Method %OnNew(pClass As %Dictionary.CacheClassname, pMethod As %Dictionary.CacheIdentifier, pNamespace As %String, pUserInputArgIndices As %List = "", pAllArgsUserInput As %Boolean = 0) As %Status [ Private, ServerOnly = 1 ]
+Method %OnNew(pClass As %Dictionary.Classname, pMethod As %Dictionary.Identifier, pNamespace As %String, pUserInputArgIndices As %List = "", pAllArgsUserInput As %Boolean = 0) As %Status [ Private, ServerOnly = 1 ]
 {
 	// Get tokens from the class and store in ..Tokens
-	Set sc = ##class(pkg.isc.codetidy.vartyping.COSTokenizer).GetMethodImplementation(pClass, pMethod, .tokens, pNamespace)
+	Set sc = ##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetMethodImplementation(pClass, pMethod, .tokens, pNamespace)
 	$$$ThrowOnError(sc)
 	Merge ..Tokens = tokens
 
@@ -180,15 +181,6 @@ Method GetVar(pVarName As %String) As pkg.isc.codetidy.vartyping.Variable
 	Quit ..VariableTracker.Get(pVarName)
 }
 
-/*Method GetCurrentCode() As %String
-{
-	Set code = ""
-	For i = ..PreviousLine:1:(..Line - 1) {
-		Set tokens = ..Tokens(i)
-		Set code = code _ ##class(WBScanner.Util.CodeFromTokens).CodeFromTokens(tokens) _ $$$NL
-	}
-	Quit code
-}*/
 /// Gets the actual code at the line
 /// the parser is currently at.
 /// Creates standard lowercase command format for common commands.
