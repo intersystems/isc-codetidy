@@ -1,7 +1,7 @@
 /// Intended use case:
 /// If you want a configuration-related class of which there will be at most one instance, that has settings with names defined in code
-/// (not just magic strings, and possibly with default values) that are configurable via the "init" command in the Package Manager shell
-/// and the Package Manager > Configuration menu item, extend AbstractSettings and add some properties, and you get all that.
+/// (not just magic strings, and possibly with default values) which are easy to enumerate programmatically,
+/// extend AbstractSettings and add some properties, and you get all that.
 /// The description of the settings is taken from the triple-slash documentation for them.
 Class pkg.isc.codetidy.extension.AbstractSettings Extends (%Persistent, pkg.isc.codetidy.extension.Singleton, pkg.isc.codetidy.extension.IConfigurable) [ Abstract, NoExtent ]
 {

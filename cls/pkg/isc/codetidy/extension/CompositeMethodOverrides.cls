@@ -1,3 +1,4 @@
+/// Used via multiple inheritance in <class>pkg.isc.codetidy.extension.Composite</class> to override some erstwhile final members from %Studio.Extension.Base
 Class pkg.isc.codetidy.extension.CompositeMethodOverrides
 {
 

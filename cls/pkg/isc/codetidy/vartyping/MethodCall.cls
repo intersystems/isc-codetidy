@@ -1,3 +1,4 @@
+/// Registered object to track information about a method call
 Class pkg.isc.codetidy.vartyping.MethodCall Extends %RegisteredObject
 {
 

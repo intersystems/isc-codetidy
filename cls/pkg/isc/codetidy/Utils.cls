@@ -1,3 +1,4 @@
+/// Utility and command-line APIs for configuring and using CodeTidy
 Class pkg.isc.codetidy.Utils
 {
 

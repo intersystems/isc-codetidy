@@ -1,9 +1,8 @@
 Include (%occErrors, pkg.isc.codetidy.CodeTidy)
 
-/// Experimental
-/// Code Cleanup
+/// Code Cleanup Methods
 /// Process class methods and MAC routines
-/// Expand / contract / upper  /lower / title case commands, special variables, intrinsic functions and embedded SQL keywords
+/// Expand / contract / upper  / lower / title case commands, special variables, intrinsic functions and embedded SQL keywords
 Class pkg.isc.codetidy.CodeTidy Extends %RegisteredObject
 {
 

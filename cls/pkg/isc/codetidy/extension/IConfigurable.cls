@@ -1,6 +1,5 @@
 /// Interface for classes that require some level of configuration.
-/// SETTINGS and DESCRIPTION are used to dynamically populate %ZHSLIB.PackageManager.Developer.Extension.PackageManager.UI.Configuration
-/// with all classes that implement IConfigurable.
+/// SETTINGS and DESCRIPTION from all subclasses exposed via ListSettings class query.
 Class pkg.isc.codetidy.extension.IConfigurable [ Abstract ]
 {
 

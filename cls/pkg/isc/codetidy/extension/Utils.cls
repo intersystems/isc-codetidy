@@ -1,3 +1,4 @@
+/// Utility methods of general use for %Studio.Extension.Base subclasses
 Class pkg.isc.codetidy.extension.Utils
 {
 

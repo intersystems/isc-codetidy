@@ -1,3 +1,4 @@
+/// Finds methods called from an ObjectScript command
 Class pkg.isc.codetidy.vartyping.MethodsCalled
 {
 
