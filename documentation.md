@@ -17,13 +17,13 @@ zpm "load <absolute path to repository root>"
 
 ## Setup
 
-1. CodeTidy needs to configured to work alongside your source control to ensure consistency between the server and file-system. To do this run,
+1. CodeTidy needs to configured to work alongside your source control to ensure consistency between the server and file-system. To do this, run:
 
 ```
 do ##class(pkg.isc.codetidy.Utils).SetupExtension()
 ```
 
-2. Configure Settings for CodeTidy. To run this do,
+2. Configure Settings for CodeTidy. To do this, run:
 
 ```
 do ##class(pkg.isc.codetidy.Utils).Configure()
@@ -51,14 +51,7 @@ This method will let you customize CodeTidy according to your requirements. The 
 
 3.  **Fix indentation:** You can choose whether to fix the indentation for classes, routines, and JavaScript files.
 4.  **Pick indentation character:** You can choose to use tabs or spaces for indenting your code. If you want to use spaces, enter the number of spaces you'd like to indent with. Type "TAB" if you want to use tabs instead. This will convert the indentation the desired format across the file.
-5.  **Common issues/inefficiencies:** If you enable this option, CodeTidy will warn you if there are direct references to globals in your code. The globals **excluded** from the check are:
-
-    - `^ZPATCH`
-    - `^ZUPGRADE`
-    - `^ZBUILD`
-    - `^ZDATETR`
-    - `^ZSSC`
-
+5.  **Common issues/inefficiencies:** If you enable this option, CodeTidy will warn you if there are direct references to globals in your code.
 6.  **Consistent case:** When this is enabled, CodeTidy will change the case of all the commands, functions and variables to be the select character case. You can choose between making everything lower-case (this will affect all variables) and Pascal case(this will only affect system variables). It works for classes, routines and CSP files only.
 7.  **Macro comments:** You can pick this option if you don't want any of your comments to make their way into the compiled code, reducing the amount of storage needed for the program. If enabled, all comments will be converted to macro-comments.
 8.  **ESLint:** You can enable this if you want to use ESLint to lint your JavaScript files.
