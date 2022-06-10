@@ -20,7 +20,7 @@ Property MultiDimensionalProperties As %List;
 
 Property Namespace As %String;
 
-Property Class As %Dictionary.CacheClassname;
+Property Class As %Dictionary.Classname;
 
 /// This callback method is invoked by the <METHOD>%New</METHOD> method to 
 /// provide notification that a new instance of an object is being created.
@@ -32,7 +32,7 @@ Property Class As %Dictionary.CacheClassname;
 /// <p>Method %OnNew(dob as %Date = "", name as %Name = "") as %Status
 /// If instead of returning a %Status code this returns an oref and this oref is a subclass of the current
 /// class then this oref will be the one returned to the caller of %New method.
-Method %OnNew(pParameters As %String, pMultiDimensionalProperties As %List = "", pNamespace As %String, pUserInputArgIndices As %List = "", pAllArgsUserInput As %Boolean = 0, pClass As %Dictionary.CacheClassname) As %Status [ Private, ServerOnly = 1 ]
+Method %OnNew(pParameters As %String, pMultiDimensionalProperties As %List = "", pNamespace As %String, pUserInputArgIndices As %List = "", pAllArgsUserInput As %Boolean = 0, pClass As %Dictionary.Classname) As %Status [ Private, ServerOnly = 1 ]
 {
 	Kill ..Variables
 	// Add parameters to Variables property
@@ -116,7 +116,6 @@ Method VarsInCommand(pTokens As %List)
 			}
 			Set nextToken = $ListGet(pTokens, i + 1)
 			Set isVariable = 1
-			// TODO: test GetRemainingAttributes and utilize it here
 			If nextToken = $ListBuild("COS", "Object dot operator", ".") {
 				Set isVariable = ..GetRemainingAttributes(pTokens, i + 1, .endIndex, .string)
 				If isVariable {
@@ -265,7 +264,6 @@ Method ParseDim(pTokens As %List)
 		} Else {
 			// quit if initial value is started
 			Quit:(value = "=")
-			// TODO: figure out what to do with list of and array of
 			Continue:($List(token, 2) = "Delimiter")
 			Set type = type _ value
 		}
@@ -430,7 +428,7 @@ Method GetTypeFromExpression(pMethodCalls As %ListOfDataTypes) As %String
 }
 
 /// Deterimines whether a type is an object
-Method IsObject(pType As %Dictionary.CacheClassname) As %Boolean
+Method IsObject(pType As %Dictionary.Classname) As %Boolean
 {
 	// quit 0 if no type defined
 	Quit:(pType = "") 0

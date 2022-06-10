@@ -3,9 +3,6 @@ Include (%occStatus, pkg.isc.codetidy.CodeTidy)
 Class pkg.isc.codetidy.Parse [ Abstract ]
 {
 
-/// This Parameter is updated by Perforce
-Parameter SrcVer = "$Id: //projects/AppServices/OpenExchange/zpm/isc.codetidy/latest/cls/pkg/isc/codetidy/Parse.cls#2 $";
-
 ClassMethod ParseDocument(InternalName As %String, RemoveTraps As %Boolean = 0, ByRef Output As %String) As %Status
 {
 	set status = $$$OK
@@ -110,69 +107,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 			#; Apply code changes that should always be used.
 			kill msgType
 			set msgText = ""
-			
-			#; %request.Get -> $Get(%request.Data
-			set charIndex = $find(lineText, "%request.Get(")
-			if charIndex {
-				set msgType("PERF")=""
-				set msgText = msgText_$listbuild("$Get(%request.Data(""X"",1)) improves performance")
-				set endIndex = $find(lineText, ")", charIndex)
-				if endIndex {
-					#; The second parameter to %request.Get is the default value.
-					set params = $extract(lineText,charIndex,endIndex-2)
-					set lineText = $extract(lineText, 1, charIndex-14)_"$g(%request.Data("_$piece(params,",")_",1)"_$select($length(params,",")>1:","_$piece(params,",",2),1:"")_")"_$extract(lineText, endIndex, *)
-				}
-			}
-			
-			#; %session.Get -> $Get(%session.Data
-			set charIndex = $find(lineText, "%session.Get(")
-			if charIndex {
-				set msgType("PERF")=""
-				set msgText = msgText_$listbuild("$Get(%session.Data(""X"")) improves performance")
-				set endIndex = $find(lineText, ")", charIndex)
-				if endIndex {
-					#; The second parameter to %session.Get is the default value.
-					set params = $extract(lineText,charIndex,endIndex-2)
-					set lineText = $extract(lineText, 1, charIndex-14)_"$g(%session.Data("_$piece(params,",")_")"_$select($length(params,",")>1:","_$piece(params,",",2),1:"")_")"_$extract(lineText, endIndex, *)
-					write !,lineText
-				}
-			}
-			
-			#; rs.GetDataByName( -> $Get(rs.Data(
-			#; The functionality should be extended to cater for any variable names.
-			set charIndex = $find(lineText, ".GetDataByName(")
-			if charIndex {
-				set msgType("PERF")=""
-				set msgText = msgText_$listbuild("$Get(rs.Data(col)) improves performance")
-				set endIndex = $find(lineText, ")", charIndex)
-				set columnName = $extract(lineText,charIndex,endIndex-2)
-				#; Get the %ResultSet variable
-				set var = ""
-				for charIndex = charIndex-16:-1:0 {
-					set varChar=$extract(lineText,charIndex)
-					if varChar'?1(1A,1N) quit
-					set var = varChar_var
-				}
-				if endIndex {
-					set lineText = $extract(lineText, 1, charIndex)_"$g("_var_".Data("_columnName_"))"_$extract(lineText, endIndex, *)
-				}
-			}
-			
-			#; rs.Get( -> $Get(rs.Data(
-			#; This now caters to any variable with the %ResultSet type
-			set pointer = 0
-			while $listnext(ResultSetVars, pointer, var) {
-				set charIndex = $find(lineText, var_".Get(")
-				if charIndex {
-					set msgType("PERF")=""
-					set msgText = msgText_$listbuild("$get("_var_".Data(col)) improves performance")
-					set endIndex = $find(lineText, ")", charIndex)
-					if endIndex {
-						set lineText = $extract(lineText, 1, charIndex-6-$length(var))_"$g("_var_".Data("_$extract(lineText,charIndex,endIndex-2)_"))"_$extract(lineText, endIndex, *)
-					}
-				}
-			}
-			
+						
 			#; cursor:hand -> cursor:pointer
 			#if $system.Version.GetMajor()>5
 				set alteredText = $replace(lineText, "cursor:hand", "cursor:pointer")
@@ -295,136 +230,6 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 		
 		kill len
 		set nextLineText = inputCode.ReadLine(.len)
-		if '..IsDebugLine(lineText, removeTraps) {
-			if removeTraps {
-				#; Apply standard brace usage.
-				set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
-				set strippedCode = $zstrip(code, "<>W")
-				set strippedNextText = $zstrip(nextLineText,"<>W")
-				set output = lineText, writeOutput = 1
-				
-				#; E.g. 	statement }
-				#;      else {
-				#; ->   	statement
-				#;      } else {
-				if ($extract(strippedCode,*)="}")&&($extract(strippedText,*)="}")&&(
-					($extract($zconvert(strippedNextText,"L"),1,4)="else")
-					|| ($extract($zconvert(strippedNextText,"L"),1,5)="catch")) {
-					if $extract(strippedText,1,*-1) '= "" {
-						set output = $extract($zstrip(lineText,">W"),1,*-1)
-					}
-					for charIndex = 1:1:$length(lineText) {
-						if $extract(lineText,charIndex)'?1(1" ",1"	") quit
-					}
-					if $extract(strippedText,1,*-1) '= "" {
-						set nextLineIndent = $char(9)_$extract(lineText,1,charIndex-$case($length(lineText,"{")#2,1:3,:2))
-						set nextLineText = nextLineIndent_"} "_strippedNextText
-					} else {
-						#; Join closing brace and next line.
-						set output = $zstrip(lineText,">W")_" "_strippedNextText
-						
-						#; Read next line.
-						kill len
-						set nextLineText = inputCode.ReadLine(.len)
-					}
-					
-					set lineText = output
-					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
-					set strippedCode = $zstrip(code, "<>W")
-					set strippedNextText = $zstrip(nextLineText,"<>W")
-				}
-				
-				#; E.g. if condition { statement
-				#; ->   if condition {
-				#;          statement
-				if (strippedCode["{") && ($extract(strippedCode,*)'="{") && ($length(strippedCode,"{")'=$length(strippedCode,"}")) {
-					set output = $piece(lineText,"{")_"{"
-					
-					for charIndex = 1:1:$length(lineText) {
-						if $extract(lineText,charIndex)'?1(1" ",1"	") quit
-					}
-					
-					#; Immediate output of line to support processing the rest of the line.
-					do outputCode.WriteLine(output)
-					set output = $extract(lineText,1,charIndex-1)_$char(9)_$zstrip($piece(lineText,"{",2,*),"<W")
-					
-					set lineText = output
-					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
-					set strippedCode = $zstrip(code, "<>W")
-				}
-				
-				#; E.g. 	statement } 
-				#; ->   	statement
-				#;      } 
-				if (strippedCode'="}") && (strippedCode["}") && ($length(strippedCode,"}")'=$length(strippedCode,"{")) && ($piece(strippedText,"}")'="") {
-					set output = $piece(lineText,"}")
-					
-					for charIndex = 1:1:$length(lineText) {
-						if $extract(lineText,charIndex)'?1(1" ",1"	") quit
-					}
-					set output = output _ $char(13,10) _ $char(9)_$extract(lineText,1,charIndex-3)_"} "_$zstrip($piece(lineText,"}",2,*),"<W")
-					
-					set lineText = output
-					set strippedText = $zstrip(lineText,"<>W")
-					set code = ##class(pkg.isc.codetidy.Assistant).StripCode(strippedText, $$$langObjectScript) ##; Code excludes comment and quoted values
-					set strippedCode = $zstrip(code, "<>W")
-				}
-				
-				#; E.g. if condition
-				#;      {
-				#; ->   if condition {
-				// Make sure that the last character is not [ or , for dynamic objects
-				set lastChar = $extract(strippedCode, $length(strippedCode))
-				if (strippedNextText="{") && ($length(strippedCode) = $length(strippedText)) && (lastChar '= "[") && (lastChar '= ",") {
-					set nextLineText = $zstrip(lineText,">W") _ " {"
-					set strippedNextText = $zstrip(nextLineText,"<>W")
-					set writeOutput = 0, lineText = "", strippedText = "", code = "", strippedCode = ""
-				}
-
-				/*
-				Applies for if and else
-				if condition
-					statement
-				 ->
-				if condition {
-					statement
-				}
-				*/
-				set lastChar = $extract(strippedCode, *)
-				// account for stripped code ending in comment
-				set offset = 0
-				while ((lastChar = "/") || (lastChar = " ")) && (offset < $length(strippedCode)) {
-					set offset = $increment(offset)
-					set lastChar = $extract(strippedCode, * - offset)
-				}
-				set firstCharNextLine = $extract(strippedNextText)
-				set lastCharNextLine = $extract(strippedNextText, *)
-				if ((lastChar '= "{") && (firstCharNextLine '= "{") && (lastCharNextLine '= ";")) {
-					set splitString = $listfromstring(strippedCode, " ")
-					if splitString '= "" {
-						if ($list(splitString, 1) = "}") && ($listlength(splitString) >= 2) {
-							set command = $list(splitString, 2)
-						} else {
-							set command = $list(splitString, 1)
-						}
-
-						if ((command = "if") || (command = "else")) && '..HasMultipleCommands(strippedCode) {
-							set output = lineText_" {"
-							set nextLineText = nextLineText_"}"
-						}
-					}
-				}
-				
-				if writeOutput {
-					do outputCode.WriteLine(output)
-				}
-			}
-		} else {
-			write !, InternalName_"("_Label_"+"_lineCount_"): "_$zstrip(lineText, "<W")
-			if $increment(Output(".trapCount"))
-		}
 		
 		if len = -1 quit
 		set lineText = nextLineText
