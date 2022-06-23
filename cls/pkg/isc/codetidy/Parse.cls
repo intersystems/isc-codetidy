@@ -227,6 +227,8 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 				write !, InternalName_"("_Label_"+"_lineCount_"): "_displayText
 				if $increment(Output(".trapCount"))
 			}
+
+			do outputCode.WriteLine(lineText)
 		}
 		
 		kill len
