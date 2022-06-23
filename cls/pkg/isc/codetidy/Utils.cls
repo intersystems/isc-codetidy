@@ -183,17 +183,17 @@ ClassMethod RunAll(pOnlyIfInSourceControl As %Boolean = 1) As %Status
 ClassMethod Configure() As %Status
 {
 	write !, "To access help (for formatting of settings, etc.) enter ?", !
-	set result = 1
+	set result = ..GetFormatOnSave()
 	set help = "Whether files should be formatted automatically when they are saved."
 	do ##class(%Prompt).GetYesNo("Format on save?", .result, .help)
 	set @..#FORMATONSAVEGLOBAL = result
 
-	set result = 0
+	set result = ..GetResquence()
 	set help = "Whether class members should be resequenced to follow the order: properties/parameters, indices, methods/queries, triggers."
 	do ##class(%Prompt).GetYesNo("Resequence class members?", .result, .help)
 	set @..#RESEQUENCEGLOBAL = result
 
-	set result = 1
+	set result = ..GetIndent()
 	set help = "Whether files should be automatically indented."
 	do ##class(%Prompt).GetYesNo("Auto indent documents?", .result, .help)
 	set @..#INDENTGLOBAL = result
@@ -204,10 +204,11 @@ ClassMethod Configure() As %Status
 	do ##class(%Prompt).GetString("String to use for indent (type TAB for tab, or some number of spaces)", .result, .help)
 	set @..#INDENTSTRINGGLOBAL = $Case(result,"TAB":$c(9),:result)
 
-	set result = 1
+	set result = $Case(..GetParse(),"":0,:1)
 	set help = "Identify common coding inefficiencies and mistakes and help to fix them."
 	do ##class(%Prompt).GetYesNo("Look for common mistakes/inefficiencies?", .result, .help)
 	if result = 1 {
+		set result = $Case(..GetParse(),"auto":1,:0)
 		set help = "Whether or not to automatically apply the warnings from Parse."
 		do ##class(%Prompt).GetYesNo("Fix such issues automatically?", .result, .help)
 		if result = 1 {
@@ -219,23 +220,23 @@ ClassMethod Configure() As %Status
 		set @..#ParseGLOBAL = ""
 	}
 
-	set result = 1
+	set result = ..GetCodeTidy()
 	set help = "CodeTidy expands commands, functions, and variables as well as making capitilization the same throughout."
 	do ##class(%Prompt).GetYesNo("Enforce consistent command/function/system variable case?", .result, .help)
 	set @..#CODETIDYGLOBAL = result
 	if result = 1 {
-		set result = 0
+		set result = ..GetUseCapitals()
 		set help = "Whether to use pascal case in commands, system functions, and system variables. If not chosen, will use lower case."
 		do ##class(%Prompt).GetYesNo("Use pascal case commands, system functions, and system variables?", .result, .help)
 		set @..#USECAPITALSGLOBAL = result
 	}
 	
-	set result = 0
+	set result = ..GetUseMacroComments()
 	set help = "Whether or not to replace all comments with macro (#;) comments"
 	do ##class(%Prompt).GetYesNo("Convert all comments to macro (#;) comments?", .result, .help)
 	set @..#USEMACROCOMMENTSGLOBAL = result
 	
-	set result = 0
+	set result = ..GetESLintEnabled()
 	set help = "ESLint is an external javascript linter that can be run automatically on js files."
 	do ##class(%Prompt).GetYesNo("Use ESLint?", .result, .help)
 	set @..#ESLINTENABLEDGLOBAL = result
