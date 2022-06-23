@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.2] - 2022-06-23
 ### Fixed
-- ##class(pkg.isc.codetidy.Utils).Configure() defaults to current settings
+- #13: ##class(pkg.isc.codetidy.Utils).Configure() defaults to current settings
 
 ## [1.0.1] - 2022-06-23
 ### Fixed
