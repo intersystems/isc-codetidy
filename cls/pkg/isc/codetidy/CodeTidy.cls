@@ -6,7 +6,7 @@ Include (%occErrors, pkg.isc.codetidy.CodeTidy)
 Class pkg.isc.codetidy.CodeTidy Extends %RegisteredObject
 {
 
-Parameter DEBUG = 1;
+Parameter DEBUG = 0;
 
 /// Process a document - main entry point
 ClassMethod Document(InternalName) As %Status
@@ -465,17 +465,11 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 	// ##class
 	if this("Type") = $$$COSObjectClass {
 		set conv("Frag") = this("Frag")
-		if ##class(pkg.isc.codetidy.Utils).GetUseCapitals() = 0 {
-			set conv("Frag") = $zconvert(conv("Frag"), "l")
-		} else {
-			set conv("Frag") = $zconvert(conv("Frag"), "w")
-		}
 		set conv("Line") = conv("Line") _ "##class"
 		quit
 	}
 	// &sql
 	
-	zw this
 	if this("Type") = $$$COSSQL {
 		set conv("Frag") = this("Frag")
 		if ##class(pkg.isc.codetidy.Utils).GetSQLCase() '= "" {
@@ -631,9 +625,9 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 			set conv("PostConditional") = 0
 		}
 		
-		set conv("Frag") = $get($$$MappedValue(this("Lang"), this("Type"), $zconvert(conv("Frag"), "L")), conv("Frag"))
-		
-		if ##class(pkg.isc.codetidy.Utils).GetUseCapitals() = 0 {
+		if ($data($$$MappedValue(this("Lang"), this("Type"), $zconvert(conv("Frag"), "L")))){
+			set conv("Frag") = $get($$$MappedValue(this("Lang"), this("Type"), $zconvert(conv("Frag"), "L")), conv("Frag"))
+		} elseif ##class(pkg.isc.codetidy.Utils).GetUseCapitals() = 0 {
 			set conv("Frag") = $zconvert(conv("Frag"), "l")
 		} else {
 			set conv("Frag") = $zconvert(conv("Frag"), "w")
