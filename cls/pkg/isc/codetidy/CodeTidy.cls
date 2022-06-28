@@ -171,7 +171,7 @@ ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "
 	set conv("PostConditional") = 0, conv("JSSwitch") = 0, conv("JSONSwitch") = 0, conv("PatternMatch") = 0
 	set conv("CodeStream") = instream
 
-	if @##class(Utils).#ADDSQLPLAN{
+	if ##class(pkg.isc.codetidy.Utils).GetAddSQLPlan(){
 		// SQL Schema is used in execution plan analysis
 		set conv("SQLSchema") = $get(sqlSchemaName)
 	}
@@ -203,8 +203,8 @@ ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "
 
 	if lang = "SQL" {
 		if $data(conv("SQL")) {
-			if ((@##class(Utils).#ADDSQLPLAN = 1) && $get(conv("SQLPLAN")))
-				|| (@##class(Utils).#ADDSQLPLAN = 2) {
+			if ((##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() = 1) && $get(conv("SQLPLAN")))
+				|| (##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() = 2) {
 				// Calculate SQL Execution Plan			
 				do ..InsertQueryPlan(.last, .this, .next, .conv)
 			}		
@@ -230,7 +230,7 @@ ClassMethod InsertQueryPlan(ByRef last, ByRef this, ByRef next, ByRef conv)
 		if plan(i) = "<frozenPlan />" continue
 		
 		// Use current indent + 1 because current indent will match the closing bracket.
-		set indent = @##class(Utils).#INDENTSTRINGGLOBAL _ $translate($justify("", this("Indent") + 1), $char(32), $char(9))
+		set indent = ##class(pkg.isc.codetidy.Utils).GetIndentString() _ $translate($justify("", this("Indent") + 1), $char(32), $char(9))
 		if $piece(plan(i), " ") = "<cost" {
 			do conv("CodeStream").WriteLine(indent _ "-- ; Relative Cost = " _ $piece(plan(i), """", 2))
 			do conv("CodeStream").WriteLine(indent _ "-- ; ")
@@ -263,7 +263,7 @@ ClassMethod ProgressLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 
 ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 {
-	if @##class(Utils).#ADDSQLPLAN {
+	if ##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() {
 		// Exclude existing execution plan as comment.
 		if $extract($zstrip(conv("Line"), "<W"), 1, 4) = "-- ;" {
 			set conv("SQLPLAN") = 1
@@ -271,7 +271,7 @@ ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 			quit
 		}
 	}
-	if @##class(Utils).#INDENTGLOBAL {
+	if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 		set multiLineCommand = 0
 		
 		// Ignore comments by referencng LineStripped
@@ -296,9 +296,9 @@ ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 		
 		if ..#DEBUG, $increment(%debug) < 1000 write this("Indent"), ":", next("Indent"), ":", multiLineCommand, ":", conv("Line"), !
 		
-		if ($extract(conv("Line")) = @##class(Utils).#INDENTSTRINGGLOBAL) {
+		if ($extract(conv("Line")) = ##class(pkg.isc.codetidy.Utils).GetIndentString()) {
 			// Indentation
-			set conv("Frag") = @##class(Utils).#INDENTSTRINGGLOBAL _ $translate($justify("", this("Indent") + multiLineCommand), $char(32), $char(9))
+			set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetIndentString() _ $translate($justify("", this("Indent") + multiLineCommand), $char(32), $char(9))
 			set conv("Line") = conv("Frag") _ $extract(conv("Line"), 2, *)
 		} else {
 			// Ignore indentation for ObjectScript line labels
@@ -309,7 +309,7 @@ ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 		}
 	}
 	
-	if @##class(Utils).#INDENTGLOBAL {
+	if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 		set this("Indent") = this("Indent") + next("Indent")
 		set next("Indent") = 0
 	}
@@ -369,9 +369,9 @@ ClassMethod ParseFragment(ByRef last, ByRef this, ByRef next, ByRef conv)
 		:0)
 		&& (conv("Line") = "") {
 		// Whitespace
-		if @##class(Utils).#INDENTGLOBAL {
+		if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 			// Indentation applied with the line
-			set conv("Line") = conv("Line") _ @##class(Utils).#INDENTSTRINGGLOBAL _ $zstrip(this("Frag"), "<W")
+			set conv("Line") = conv("Line") _ ##class(pkg.isc.codetidy.Utils).GetIndentString() _ $zstrip(this("Frag"), "<W")
 		} else {
 			set conv("Line") = conv("Line") _ this("Frag")
 		}
@@ -406,7 +406,7 @@ ClassMethod ParseFragment(ByRef last, ByRef this, ByRef next, ByRef conv)
 
 ClassMethod ApplyIndentation(ByRef this, ByRef next, ByRef conv, OpenChars As %String = "{(", CloseChars As %String = "})")
 {
-	if @##class(Utils).#INDENTGLOBAL {
+	if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 		if OpenChars [ this("Frag") {
 			set next("Indent") = next("Indent") + 1
 			if (this("Type") = $$$COSJSONBracket) {
@@ -436,7 +436,7 @@ ClassMethod ApplyIndentation(ByRef this, ByRef next, ByRef conv, OpenChars As %S
 					set conv("JSONSwitch") = 0
 				}
 			}
-			if conv("Line") = @##class(Utils).#INDENTSTRINGGLOBAL {
+			if conv("Line") = ##class(pkg.isc.codetidy.Utils).GetIndentString() {
 				set this("Indent") = this("Indent") - i
 			} else {
 				set next("Indent") = next("Indent") - i
@@ -447,7 +447,7 @@ ClassMethod ApplyIndentation(ByRef this, ByRef next, ByRef conv, OpenChars As %S
 
 ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 {
-	if @##class(Utils).#INDENTGLOBAL {
+	if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 		// Indentation Adjustments
 		if (this("Type") = $$$COSBrace) || (this("Type") = $$$COSJSONBracket) || (this("Type") = $$$COSJSONDelimiter) {
 			do ..ApplyIndentation(.this, .next, .conv, "({[", "]})")
@@ -478,17 +478,17 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 	zw this
 	if this("Type") = $$$COSSQL {
 		set conv("Frag") = this("Frag")
-		if @##class(Utils).#SQLCASE '= "" {
-			set conv("Frag") = $zconvert(conv("Frag"), @##class(Utils).#SQLCASE)
+		if ##class(pkg.isc.codetidy.Utils).GetSQLCase() '= "" {
+			set conv("Frag") = $zconvert(conv("Frag"), ##class(pkg.isc.codetidy.Utils).GetSQLCase())
 		}
-		if @##class(Utils).#INDENTGLOBAL {
+		if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 			do ..ApplyIndentation(.this, .next, .conv, "(", ")")
 			do ..ApplyIndentation(.this, .next, .conv, "(", ")")
 		} 
 		
 		// To force insertion of SQL execution plan separate COSSQL open and close.
 		if (this("Type") = $$$COSSQL) && (this("Frag") = ")") {
-			if (@##class(Utils).#ADDSQLPLAN = 2) {		
+			if (##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() = 2) {		
 				if (..UseSQLPlan(conv("SQLCommand"))) && (last("NonSpaceLang") '= "\n") {
 					// Note existing values
 					set temp("This", "Lang") = this("Lang")
@@ -511,7 +511,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 						"JAVASCRIPT":$$$JAVASCRIPTWhiteSpace, 
 						"SQL":$$$SQLWhiteSpace, 
 						:"")
-					set this("Frag") = @##class(Utils).#INDENTSTRINGGLOBAL
+					set this("Frag") = ##class(pkg.isc.codetidy.Utils).GetIndentString()
 					do ..InsertFragment(.last, .this)
 					do ..ParseFragment(.last, .this, .next, .conv)
 					
@@ -525,8 +525,8 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 				}
 			}
 			if $data(conv("SQL")) {
-				if ((@##class(Utils).#ADDSQLPLAN = 1) && $get(conv("SQLPLAN")))
-					|| (@##class(Utils).#ADDSQLPLAN = 2) {
+				if ((##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() = 1) && $get(conv("SQLPLAN")))
+					|| (##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() = 2) {
 					// Calculate SQL Execution Plan
 					do ..InsertQueryPlan(.last, .this, .next, .conv)
 				}					
@@ -538,7 +538,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 		
 		// To force insertion of SQL execution plan the embedded SQL 
 		// open and close tags will be moved to separate lines.
-		if (@##class(Utils).#ADDSQLPLAN = 2) {
+		if (##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() = 2) {
 			if (this("Type") = $$$COSSQL) && (this("Frag") = "(") {
 				set conv("SQLCommand") = $zconvert(next("Frag"), "U")
 				if (..UseSQLPlan(conv("SQLCommand"))) {
@@ -571,7 +571,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 							"JAVASCRIPT":$$$JAVASCRIPTWhiteSpace, 
 							"SQL":$$$SQLWhiteSpace, 
 							:"")
-						set this("Frag") = @##class(Utils).#INDENTSTRINGGLOBAL
+						set this("Frag") = ##class(pkg.isc.codetidy.Utils).GetIndentString()
 						do ..InsertFragment(.last, .this)
 						do ..ParseFragment(.last, .this, .next, .conv)
 					}
@@ -603,7 +603,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 	if this("Type") = $$$COSPreProcessorCommand {
 		set conv("Frag") = $zconvert(this("Frag"), "L")
 		set conv("Line") = conv("Line") _ conv("Frag")
-		if @##class(Utils).#INDENTGLOBAL {
+		if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 			if $case(this("Frag"), "if":1, "ifdef":1, "ifndef":1, :0)  {
 				set next("Indent") = next("Indent") + 1
 			} elseif $case(this("Frag"), "else":1, "elseif":1, :0) {
@@ -646,7 +646,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 	if (this("Type") = $$$COSOperator) || (this("Type") = $$$COSBrace) {
 		set conv("Frag") = $zconvert(this("Frag"), "L")
 		
-		if @##class(Utils).#COSWHITESPACE {
+		if ##class(pkg.isc.codetidy.Utils).GetObjectScriptWhiteSpace() {
 			// Recognise pattern match operators
 			set conv("PatternMatch") = ((conv("Frag") = "?") || (conv("Frag") = "'?"))
 			
@@ -661,7 +661,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 			}
 		}
 		
-		if @##class(Utils).#BRACEPOSITION {
+		if ##class(pkg.isc.codetidy.Utils).GetBracePosition() {
 			if (this("Frag") = "}") {
 				
 				if (last("NonSpaceLang") '= "\n") {
@@ -686,7 +686,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 						"JAVASCRIPT":$$$JAVASCRIPTWhiteSpace, 
 						"SQL":$$$SQLWhiteSpace, 
 						:"")
-					set this("Frag") = @##class(Utils).#INDENTSTRINGGLOBAL
+					set this("Frag") = ##class(pkg.isc.codetidy.Utils).GetIndentString()
 					do ..InsertFragment(.last, .this)
 					do ..ParseFragment(.last, .this, .next, .conv)
 					
@@ -703,7 +703,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 		
 		set conv("Line") = conv("Line") _ conv("Frag")
 		
-		if (@##class(Utils).#BRACEPOSITION) && (this("Type") = $$$COSBrace) {
+		if (##class(pkg.isc.codetidy.Utils).GetBracePosition()) && (this("Type") = $$$COSBrace) {
 			// Ignore subsequent whitespace
 			set currentWhiteSpace = ""
 			while $case(next("Lang"), 
@@ -737,7 +737,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 					"JAVASCRIPT":$$$JAVASCRIPTWhiteSpace, 
 					"SQL":$$$SQLWhiteSpace, 
 					:"")
-				set this("Frag") = @##class(Utils).#INDENTSTRINGGLOBAL
+				set this("Frag") = ##class(pkg.isc.codetidy.Utils).GetIndentString()
 				do ..InsertFragment(.last, .this)
 				do ..ParseFragment(.last, .this, .next, .conv)
 			} else {
@@ -750,7 +750,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 	if this("Type") = $$$COSDelimiter {
 		set conv("Frag") = $zconvert(this("Frag"), "L")
 		
-		if @##class(Utils).#COSWHITESPACE {
+		if ##class(pkg.isc.codetidy.Utils).GetObjectScriptWhiteSpace() {
 			if ('conv("PatternMatch")) && (conv("Frag") = ",") {
 				// Include whitespace before the next parameter.
 				if next("Type") '= $$$COSWhiteSpace set conv("Frag") = conv("Frag") _ " "
@@ -770,9 +770,9 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 
 ClassMethod ParseFragmentCOSComment(ByRef last, ByRef this, ByRef next, ByRef conv)
 {
-	if @##class(Utils).#COSCOMMENT '= "" {
-		set cosComment = @##class(Utils).#COSCOMMENT
-		if (@##class(Utils).#COSCOMMENT = "#;") && (last("NonSpaceType") '= "") {
+	if ##class(pkg.isc.codetidy.Utils).GetCommentStyle() '= "" {
+		set cosComment = ##class(pkg.isc.codetidy.Utils).GetCommentStyle()
+		if (##class(pkg.isc.codetidy.Utils).GetCommentStyle() = "#;") && (last("NonSpaceType") '= "") {
 			// Comment is after the start of the line
 			set cosComment = "##;"
 		}
@@ -780,18 +780,18 @@ ClassMethod ParseFragmentCOSComment(ByRef last, ByRef this, ByRef next, ByRef co
 		// Convert single line comment style
 		// Leave the double semi-colon as this acts differently to other styles.
 		// Double semi-colon retains the comment in depolyed output.
-		if $extract(this("Frag"), 1) = ";", $extract(this("Frag"), 1, 2) '= ";;" set conv("Frag") = @##class(Utils).#COSCOMMENT _ $extract(conv("Frag"), 2, *)
-		if $extract(this("Frag"), 1, 2) = "#;" set conv("Frag") = @##class(Utils).#COSCOMMENT _ $extract(conv("Frag"), 3, *)
-		if $extract(this("Frag"), 1, 3) = "##;" set conv("Frag") = @##class(Utils).#COSCOMMENT _ $extract(conv("Frag"), 4, *)
-		if @##class(Utils).#COSWHITESPACE {
-			if $extract(conv("Frag"), 1, 2) = "//", $extract(conv("Frag"), 3) '= " " set conv("Frag") = @##class(Utils).#COSCOMMENT _ " " _ $extract(conv("Frag"), 3, *)
+		if $extract(this("Frag"), 1) = ";", $extract(this("Frag"), 1, 2) '= ";;" set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ $extract(conv("Frag"), 2, *)
+		if $extract(this("Frag"), 1, 2) = "#;" set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ $extract(conv("Frag"), 3, *)
+		if $extract(this("Frag"), 1, 3) = "##;" set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ $extract(conv("Frag"), 4, *)
+		if ##class(pkg.isc.codetidy.Utils).GetObjectScriptWhiteSpace() {
+			if $extract(conv("Frag"), 1, 2) = "//", $extract(conv("Frag"), 3) '= " " set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ " " _ $extract(conv("Frag"), 3, *)
 		}
 	}
 }
 
 ClassMethod ParseFragmentSQL(ByRef last, ByRef this, ByRef next, ByRef conv)
 {
-	if @##class(Utils).#ADDSQLPLAN {
+	if ##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() {
 		// Capture SQL statements
 		if $extract(this("Frag"), 1, 4) '= "-- ;" {
 			if '$data(conv("SQL")) || (this("Type") = $$$SQLStatementkeyword) || (this("Type") = $$$SQLQualifierkeyword) || (this("Type") = $$$SQLOperator) {
@@ -803,7 +803,7 @@ ClassMethod ParseFragmentSQL(ByRef last, ByRef this, ByRef next, ByRef conv)
 			set conv("SQLPLAN") = 1
 		}
 	}
-	if @##class(Utils).#INDENTGLOBAL {
+	if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 		// Indentation Adjustments
 		if (this("Type") = $$$SQLDelimiter) {
 			do ..ApplyIndentation(.this, .next, .conv, "(", ")")
@@ -833,9 +833,9 @@ ClassMethod ParseFragmentSQL(ByRef last, ByRef this, ByRef next, ByRef conv)
 	}
 	// SQL keywords and operators
 	if ($case(this("Type"), $$$SQLStatementkeyword:1, $$$SQLQualifierkeyword:1, $$$SQLExpressionkeyword:1, $$$SQLOperator:1, :0)) {
-		if @##class(Utils).#SQLCASE '= "" {
+		if ##class(pkg.isc.codetidy.Utils).GetSQLCase() '= "" {
 			// Upper case SQL keywords and operators
-			set conv("Frag") = $zconvert(this("Frag"), @##class(Utils).#SQLCASE)
+			set conv("Frag") = $zconvert(this("Frag"), ##class(pkg.isc.codetidy.Utils).GetSQLCase())
 		}
 		set conv("Line") = conv("Line") _ conv("Frag")
 		quit
@@ -845,7 +845,7 @@ ClassMethod ParseFragmentSQL(ByRef last, ByRef this, ByRef next, ByRef conv)
 
 ClassMethod ParseFragmentJS(ByRef last, ByRef this, ByRef next, ByRef conv)
 {
-	if @##class(Utils).#INDENTGLOBAL {
+	if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 		// Indentation Adjustments
 		if (this("Type") = $$$JAVASCRIPTDelimiter) {
 			do ..ApplyIndentation(.this, .next, .conv, "{(", "})")

@@ -243,7 +243,7 @@ ClassMethod Configure() As %Status
 		set @..#USECAPITALSGLOBAL = result
 	}
 	
-	set result = @..#COSCOMMENT
+	set result = ..GetCommentStyle()
 	set help = "All comments in the code will be converted to the chosen style. Macro comments do not end up in the compiled code."
 	do ##class(%Prompt).GetString("Which comment style should be used? Available options - ;, //, and #; (macro comment).", .result, .help)
 	set @..#COSCOMMENT = result
@@ -253,40 +253,33 @@ ClassMethod Configure() As %Status
 		set @..#USEMACROCOMMENTSGLOBAL = 0
 	}
 	
-	set result = @..#ADDSQLPLAN
+	set result = ($number(..GetAddSQLPlan())+1)
 	write !, "Add the execution plan for SQL statements as a comment following the statement?"
 	set help = "Choose if/when an execution plan is added for SQL commands. Whilst using option 1 - Update, developers may insert a comment of ""-- ;"" and save the document to insert the execution plan. "
 	set options = ""
 	set options(1) = "Disabled"
-	set options(2) = "Only insert execution plan when explicitly set to do so"
+	set options(2) = "Only insert execution plan when marked (Insert a comment of ""-- ;"" and save the document to insert the execution plan.)"
 	set options(3) =  "Always insert execution plan"
-	do ##class(%Prompt).GetMenu(" ", .result, .options, .help, $$$InitialDisplayMask)
-	set @..#ADDSQLPLAN = ""_($NUMBER(result)-1)
+	do ##class(%Prompt).GetMenu("Enter the corresponding number", .result, .options, .help, $$$InitialDisplayMask)
+	set @..#ADDSQLPLAN = ""_($number(result)-1)
 
-	set result = @..#SQLCASE
+	set result = ..GetSQLCase()
+	set result = $case(result, "U":2, "L":3, :1)
 	write !, "Which case should SQL be converted to?"
 	set help = "Choose which case SQL statements are converted to."
-	set options = "Which case should SQL be converted to?"
+	set options = ""
 	set options(1) = "Do not convert"
 	set options(2) = "Uppercase"
 	set options(3) = "Lowercase"
-	do ##class(%Prompt).GetMenu(" ", .result, .options, .help, $$$InitialDisplayMask)
-	if result = 1 {
-		set @..#SQLCASE = ""
-	}
-	if result = 2 {
-		set @..#SQLCASE = "U"
-	}
-	else {
-		set @..#SQLCASE = "L"
-	}
+	do ##class(%Prompt).GetMenu("Enter the corresponding number", .result, .options, .help, $$$InitialDisplayMask)
+	set @..#SQLCASE = $case(result, 2:"U", 3:"L", :"")
 
-	set result = @..#BRACEPOSITION
+	set result = ..GetBracePosition()
 	set help = "Adjust brace usage to end the line with opening brace and start new lines for closing brace."
 	do ##class(%Prompt).GetYesNo("Modify positions of opening and closing braces to be consistent?", .result, .help)
 	set @..#BRACEPOSITION = result
 
-	set result = @..#COSWHITESPACE
+	set result = ..GetObjectScriptWhiteSpace()
 	set help = "When this parameter is true, white space will be inserted either side of operators and after each argument."
 	do ##class(%Prompt).GetYesNo("Add spaces before and after ObjectScript operators and arguments?", .result, .help)
 	set @..#COSWHITESPACE = result
@@ -494,6 +487,14 @@ ClassMethod GetUseCapitals() As %Boolean
 	quit 0
 }
 
+ClassMethod GetCommentStyle() As %String
+{
+	if ($data(@..#COSCOMMENT)) {
+		quit @..#COSCOMMENT
+	}
+	quit $case(..GetUseMacroComments(), 1:"#;", :"//")
+}
+
 /// Returns the value from the global if it exists.
 /// Defaults to 0
 ClassMethod GetUseMacroComments() As %Boolean
@@ -502,6 +503,38 @@ ClassMethod GetUseMacroComments() As %Boolean
 		quit @..#USEMACROCOMMENTSGLOBAL
 	}
 	quit 0
+}
+
+ClassMethod GetAddSQLPlan() As %String
+{
+	if $data(@..#ADDSQLPLAN) {
+		quit @..#ADDSQLPLAN
+	}
+	quit "0"
+}
+
+ClassMethod GetSQLCase() As %String
+{
+	if $data(@..#SQLCASE) {
+		quit @..#SQLCASE
+	}
+	quit ""
+}
+
+ClassMethod GetBracePosition() As %Boolean
+{
+	if $data(@..#BRACEPOSITION) {
+		quit @..#BRACEPOSITION
+	}
+	quit 1
+}
+
+ClassMethod GetObjectScriptWhiteSpace() As %Boolean
+{
+	if $data(@..#COSWHITESPACE) {
+		quit @..#COSWHITESPACE
+	}
+	quit 1
 }
 
 /// Returns the value from the global if it exists.
