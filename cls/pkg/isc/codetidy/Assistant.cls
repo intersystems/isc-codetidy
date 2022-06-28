@@ -975,7 +975,12 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         
         // Check for multi-line commands
         // Parameters passed on separate lines (inside parenthesis) are already catered for.
-        if (+$get(Handle("(")) = 0) && $extract(LineText, $length(LineText) = ",") {
+        // Similarly cater for json syntax, e.g.:
+		//  set myJSONObject = {
+		//   "jsonProp1" : "some value1",
+		//   "jsonProp2" : "some value2"
+		//  }
+        if (+$get(Handle("(")) = 0) && (+$get(Handle("{"))=0) && $extract(LineText, $length(LineText) = ",") {
             // Check for a dynamic object line
             set isDynamicObjectLine = LineText?1"".E1""":".E1"".E1""","
             if (+$get(Handle(",")) = 0) && 'isDynamicObjectLine {
