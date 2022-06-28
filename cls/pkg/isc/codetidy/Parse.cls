@@ -53,10 +53,10 @@ ClassMethod ParseDocument(InternalName As %String, RemoveTraps As %Boolean = 0, 
 			
 			if RemoveTraps {
 				#; Save the changes.
-				#; set status = classDef.%Save()
-				#; if $$$ISERR(status) {
-				#; 	do $system.Status.DisplayError(status)
-				#; }
+				set status = classDef.%Save()
+				if $$$ISERR(status) {
+					do $system.Status.DisplayError(status)
+				}
 			}
 		} else {
 			quit sc
