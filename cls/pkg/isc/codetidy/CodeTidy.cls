@@ -648,7 +648,6 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 			//  by reference, not, and post conditions.
 			// Post conditional expressions can only use spaces inside parenthesis.
 			// Pattern match cannot be broken up with spaces.
-			write "Last(nonspacetype) = ", $case(last("NonSpaceType"), $$$COSLocalvariable:1, $$$COSNumber:1, :0), !
 			if ('conv("PostConditional")) && (".'" '[ conv("Frag")) && (((conv("Frag") '= "+") && (conv("Frag") '= "-")) || $case(last("NonSpaceType"), $$$COSLocalvariable:1, $$$COSNumber:1, :0)) {
 				if $case(last("Type"), $$$COSWhiteSpace:0, "":0, :1) set conv("Frag") = " " _ conv("Frag")
 				if $case(next("Type"), $$$COSWhiteSpace:0, "":0, :1) set conv("Frag") = conv("Frag") _ " "
@@ -884,7 +883,6 @@ ClassMethod UseSQLPlan(Command As %String) As %Boolean
 ClassMethod GetSQLPlan(ByRef SQL As %String, Schema As %String, Output Plan As %String) As %Status
 {
 
-	W "----------------------", !!!, "GETTING SQL PLAN", !!!, "=--------------------------"
 	set started = $piece($ztimestamp, ",", 2)
 	new %plan
 	merge sql = SQL
@@ -925,8 +923,6 @@ ClassMethod GetSQLPlan(ByRef SQL As %String, Schema As %String, Output Plan As %
 		if $data(%plan(1)) {
 			merge Plan = %plan
 		}
-
-		w !!!!, "FINAL PLAN: ", !, ?8, !, "___________________", !!!
 	}
 	
 	quit $$$OK
