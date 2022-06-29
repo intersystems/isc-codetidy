@@ -826,6 +826,7 @@ ClassMethod ParseFragmentSQL(ByRef last, ByRef this, ByRef next, ByRef conv)
 	}
 	// SQL keywords and operators
 	if ($case(this("Type"), $$$SQLStatementkeyword:1, $$$SQLQualifierkeyword:1, $$$SQLExpressionkeyword:1, $$$SQLOperator:1, :0)) {
+		set conv("Frag") = this("Frag")
 		if ##class(pkg.isc.codetidy.Utils).GetSQLCase() '= "" {
 			// Upper case SQL keywords and operators
 			set conv("Frag") = $zconvert(this("Frag"), ##class(pkg.isc.codetidy.Utils).GetSQLCase())

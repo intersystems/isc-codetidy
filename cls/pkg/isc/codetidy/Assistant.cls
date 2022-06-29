@@ -1259,7 +1259,7 @@ Method DisplayCheckOutcome(InternalName As %String, Display As %Integer, ListToD
 /// <p>In addition to these checks JavaScript gets run through an open source verification tool.  This tool 
 /// performs some fairly strict checks and optimisation tips for JavaScript.  For example the tool will indicate 
 /// if a line is missing a semi-colon or if a variable has already been defined.
-Method CreateListOfAlerts(InternalName As %String, Output ListOfAlerts As %String, Output Count As %Integer, BackupFile As %String = "", IsEditsCheck As %Boolean = 0) As %Status
+Method CreateListOfAlerts(InternalName As %String, Output ListOfAlerts As %String, Output Count As %Integer, BackupFile As %String = "", IsEditsCheck As %Boolean = 1) As %Status
 {
     #; Methods such as <Property>Get or <Query>Execute override generated methods.
     #; In these cases the property or query may have a sufficient description.
@@ -1651,11 +1651,11 @@ Method CheckCode(Document As %String, Label As %String = "", Language As %String
                 for  {
                     set index = $order(..AlertPatterns(category, index))
                     if index = "" quit
-                    /*if 'IsEditsCheck {
-                    if ($list(..AlertPatterns(category, index), *) = "forEditsCheck") {
-                    continue
+                    if 'IsEditsCheck {
+                        if ($list(..AlertPatterns(category, index), *) = "forEditsCheck") {
+                            continue
+                        }
                     }
-                    }*/
                     
                     if lineTextLower?@$list(..AlertPatterns(category, index)) {
                         set showLine = 1
