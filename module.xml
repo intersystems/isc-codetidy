@@ -6,6 +6,7 @@
   <Packaging>module</Packaging>
   <Resource Name="pkg.isc.codetidy.PKG" />
   <Resource Name="pkg.isc.codetidy.CodeTidy.INC" />
+  <UnitTest Name="/tests" Format="UDL" Package="pkg.isc.codetidy.test" />
   <LifecycleClass>Module</LifecycleClass>
 </Module>
 </Document></Export>
