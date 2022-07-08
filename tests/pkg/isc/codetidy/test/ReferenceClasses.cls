@@ -152,6 +152,51 @@ Method TestExpansionOptions()
     set ^Config("CodeTidy","codetidy") = 1
 }
 
+Method TestCommentStyleOptions()
+{
+    Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
+    set referenceClassItemName = "TestPackage.CommentStyleTestClass.cls"
+    set referenceClassName = referenceRoot_"before/"_referenceClassItemName
+    
+    // Run CodeTidy with lower-case expansion
+    set ^Config("CodeTidy","coscomment")=";"
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+    
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+    Set truthFile = referenceRoot_"after/"_"TestPackage.CommentStyleTestClassSemicolon.cls"
+    Set exportFile = referenceRoot_"compare/"_referenceClassItemName
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    Do ##class(%Library.File).Delete(exportFile)
+
+
+    // Run CodeTidy with Pascal-case expansion
+    set ^Config("CodeTidy","coscomment")="#;"
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+    Set truthFile = referenceRoot_"after/"_"TestPackage.CommentStyleTestClassMacro.cls"
+    Set exportFile = referenceRoot_"compare/"_referenceClassItemName
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    Do ##class(%Library.File).Delete(exportFile)
+
+
+    // Run CodeTidy with expansion disabled
+    set ^Config("CodeTidy","coscomment")="//"
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+    Set truthFile = referenceRoot_"after/"_"TestPackage.CommentStyleTestClassForwardSlash.cls"
+    Set exportFile = referenceRoot_"compare/"_referenceClassItemName
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    Do ##class(%Library.File).Delete(exportFile)
+}
+
 Method %OnClose() As %Status
 {
     merge ^Config("CodeTidy") = ..userConfig
