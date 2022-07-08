@@ -31,6 +31,7 @@ Method TestResequenceOptions(DeleteCompFiles As %Numeric = 1)
     set referenceClassItemName = "TestPackage.ResequenceTestClass.cls"
     set referenceClassName = referenceRoot_"before/"_referenceClassItemName
     
+
     // Run CodeTidy with resequencing enabled
     set ^Config("CodeTidy","resequence") = 1
     Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
@@ -70,6 +71,7 @@ Method TestIndentationOptions(DeleteCompFiles As %Numeric = 1)
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.IndentationTestClass.cls"
     set referenceClassName = referenceRoot_"before/"_referenceClassItemName
+    
     
     // Run CodeTidy with automatic indentation set to 4 spaces
     Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
@@ -128,6 +130,7 @@ Method TestExpansionOptions(DeleteCompFiles As %Numeric = 1)
     set referenceClassItemName = "TestPackage.ExpansionTestClass.cls"
     set referenceClassName = referenceRoot_"before/"_referenceClassItemName
     
+
     // Run CodeTidy with lower-case expansion
     set ^Config("CodeTidy","capital")=0
     set ^Config("CodeTidy","codetidy")=1
@@ -193,6 +196,7 @@ Method TestCommentStyleOptions(DeleteCompFiles As %Numeric = 1)
     set referenceClassItemName = "TestPackage.CommentStyleTestClass.cls"
     set referenceClassName = referenceRoot_"before/"_referenceClassItemName
     
+
     // Run CodeTidy with lower-case expansion
     set ^Config("CodeTidy","coscomment")=";"
     Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
@@ -253,6 +257,7 @@ Method TestSQLPlanOptions(DeleteCompFiles As %Numeric = 1)
     set referenceClassItemName = "TestPackage.SQLPLanTestClass.cls"
     set referenceClassName = referenceRoot_"before/"_referenceClassItemName
     
+
     // Run CodeTidy with lower-case expansion
     set ^Config("CodeTidy","sqlplan")="0"
     Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
@@ -296,6 +301,67 @@ Method TestSQLPlanOptions(DeleteCompFiles As %Numeric = 1)
     Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
 
     set resultClass = "TestPackage.SQLPLanTestClassAlways.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+}
+
+Method TestSQLCaseOptions(DeleteCompFiles As %Numeric = 0)
+{
+    Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
+    set referenceClassItemName = "TestPackage.SQLCaseTestClass.cls"
+    set referenceClassName = referenceRoot_"before/"_referenceClassItemName
+    
+
+    // Run CodeTidy with lower-case expansion
+    set ^Config("CodeTidy","sqlcase")=""
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+    
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.SQLCaseTestClass.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+
+
+    // Run CodeTidy with Pascal-case expansion
+    set ^Config("CodeTidy","sqlcase")="L"
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.SQLCaseTestClassLowerCase.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+
+
+    // Run CodeTidy with expansion disabled
+    set ^Config("CodeTidy","sqlcase")="U"
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.SQLCaseTestClassUpperCase.cls"
     Set truthFile = referenceRoot_"after/"_resultClass
     Set exportFile = referenceRoot_"compare/"_resultClass
 
