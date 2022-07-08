@@ -9,7 +9,9 @@ Method MethodA()
 	set ^TestGlobal = 1
 	set b = 3 * 4 / 2 + 7
 
-	if b > 0 { write b, " is greater than 0.", ! }
+	if b > 0 {
+		write b, " is greater than 0.", !
+	}
 }
 
 Index TestIndex On BGD;
