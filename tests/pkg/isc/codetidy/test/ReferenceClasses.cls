@@ -312,7 +312,7 @@ Method TestSQLPlanOptions(DeleteCompFiles As %Numeric = 1)
     }
 }
 
-Method TestSQLCaseOptions(DeleteCompFiles As %Numeric = 0)
+Method TestSQLCaseOptions(DeleteCompFiles As %Numeric = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.SQLCaseTestClass.cls"
@@ -365,6 +365,47 @@ Method TestSQLCaseOptions(DeleteCompFiles As %Numeric = 0)
     Set truthFile = referenceRoot_"after/"_resultClass
     Set exportFile = referenceRoot_"compare/"_resultClass
 
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+}
+
+Method TestBraceOptions(DeleteCompFiles As %Numeric = 1)
+{
+    Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
+    set referenceClassItemName = "TestPackage.BraceTestClass.cls"
+    set referenceClassName = referenceRoot_"before/"_referenceClassItemName
+    
+
+    // Run CodeTidy with resequencing enabled
+    set ^Config("CodeTidy","brace") = 0
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+    
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.BraceTestClassDisabled.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+    
+
+    // Run CodeTidy with resequencing disabled
+    set ^Config("CodeTidy","brace") = 1
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.BraceTestClassEnabled.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
