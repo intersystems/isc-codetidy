@@ -19,7 +19,7 @@ Method MethodB()
     write "test output"
     set a = $piece("hwd.ejwiop", ".", 2)
     write !, a
-    write !, $ZConvert(a, "u")
+    write !, $zconvert(a, "u")
 }
 
 Parameter ABC = "Param";

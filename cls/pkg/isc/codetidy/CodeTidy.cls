@@ -153,7 +153,7 @@ ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "
 		quit
 	}
 	
-	if '$$$MappedValuesExist do ..InitialiseMap()
+	do ..InitialiseMap()
 	
 	do outstream.Rewind()
 
