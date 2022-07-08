@@ -414,6 +414,47 @@ Method TestBraceOptions(DeleteCompFiles As %Numeric = 1)
     }
 }
 
+Method TestSpacingOptions(DeleteCompFiles As %Numeric = 1)
+{
+    Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
+    set referenceClassItemName = "TestPackage.SpacingTestClass.cls"
+    set referenceClassName = referenceRoot_"before/"_referenceClassItemName
+    
+
+    // Run CodeTidy with resequencing enabled
+    set ^Config("CodeTidy","coswhitespace") = 0
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+    
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.SpacingTestClassDisabled.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+    
+
+    // Run CodeTidy with resequencing disabled
+    set ^Config("CodeTidy","coswhitespace") = 1
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.SpacingTestClassEnabled.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+}
+
 Method %OnClose() As %Status
 {
     merge ^Config("CodeTidy") = ..userConfig
