@@ -102,6 +102,56 @@ Method TestIndentationOptions()
     Do ##class(%Library.File).Delete(exportFile)
 }
 
+Method TestExpansionOptions()
+{
+    Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
+    set referenceClassItemName = "TestPackage.ExpansionTestClass.cls"
+    set referenceClassName = referenceRoot_"before/"_referenceClassItemName
+    
+    // Run CodeTidy with lower-case expansion
+    set ^Config("CodeTidy","capital")=0
+    set ^Config("CodeTidy","codetidy")=1
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+    
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+    Set truthFile = referenceRoot_"after/"_"TestPackage.ExpansionTestClassLowerCase.cls"
+    Set exportFile = referenceRoot_"compare/"_referenceClassItemName
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    Do ##class(%Library.File).Delete(exportFile)
+
+
+    // Run CodeTidy with Pascal-case expansion
+    set ^Config("CodeTidy","codetidy") = 1
+    set ^Config("CodeTidy","capital") = 1
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+    Set truthFile = referenceRoot_"after/"_"TestPackage.ExpansionTestClassPascalCase.cls"
+    Set exportFile = referenceRoot_"compare/"_referenceClassItemName
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    Do ##class(%Library.File).Delete(exportFile)
+
+
+    // Run CodeTidy with expansion disabled
+    set ^Config("CodeTidy","codetidy") = 0
+    set ^Config("CodeTidy","capital") = 0
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+    Set truthFile = referenceRoot_"after/"_"TestPackage.ExpansionTestClass.cls"
+    Set exportFile = referenceRoot_"compare/"_referenceClassItemName
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    Do ##class(%Library.File).Delete(exportFile)
+
+    set ^Config("CodeTidy","codetidy") = 1
+}
+
 Method %OnClose() As %Status
 {
     merge ^Config("CodeTidy") = ..userConfig
