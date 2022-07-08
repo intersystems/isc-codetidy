@@ -25,7 +25,7 @@ Method OnBeforeAllTests() As %Status
     quit $$$OK
 }
 
-Method TestResequenceOptions(DeleteCompFiles As %Numeric = 1)
+Method TestResequenceOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.ResequenceTestClass.cls"
@@ -66,7 +66,7 @@ Method TestResequenceOptions(DeleteCompFiles As %Numeric = 1)
     }
 }
 
-Method TestIndentationOptions(DeleteCompFiles As %Numeric = 1)
+Method TestIndentationOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.IndentationTestClass.cls"
@@ -124,7 +124,7 @@ Method TestIndentationOptions(DeleteCompFiles As %Numeric = 1)
     set ^Config("CodeTidy","indentString") = "    "
 }
 
-Method TestExpansionOptions(DeleteCompFiles As %Numeric = 1)
+Method TestExpansionOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.ExpansionTestClass.cls"
@@ -190,7 +190,7 @@ Method TestExpansionOptions(DeleteCompFiles As %Numeric = 1)
     set ^Config("CodeTidy","codetidy") = 1
 }
 
-Method TestCommentStyleOptions(DeleteCompFiles As %Numeric = 1)
+Method TestCommentStyleOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.CommentStyleTestClass.cls"
@@ -251,7 +251,7 @@ Method TestCommentStyleOptions(DeleteCompFiles As %Numeric = 1)
     }
 }
 
-Method TestSQLPlanOptions(DeleteCompFiles As %Numeric = 1)
+Method TestSQLPlanOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.SQLPLanTestClass.cls"
@@ -312,7 +312,7 @@ Method TestSQLPlanOptions(DeleteCompFiles As %Numeric = 1)
     }
 }
 
-Method TestSQLCaseOptions(DeleteCompFiles As %Numeric = 1)
+Method TestSQLCaseOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.SQLCaseTestClass.cls"
@@ -373,7 +373,7 @@ Method TestSQLCaseOptions(DeleteCompFiles As %Numeric = 1)
     }
 }
 
-Method TestBraceOptions(DeleteCompFiles As %Numeric = 1)
+Method TestBraceOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.BraceTestClass.cls"
@@ -414,7 +414,7 @@ Method TestBraceOptions(DeleteCompFiles As %Numeric = 1)
     }
 }
 
-Method TestSpacingOptions(DeleteCompFiles As %Numeric = 1)
+Method TestSpacingOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.SpacingTestClass.cls"
