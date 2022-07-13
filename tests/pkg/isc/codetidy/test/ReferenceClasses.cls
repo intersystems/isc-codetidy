@@ -124,6 +124,47 @@ Method TestIndentationOptions(DeleteCompFiles As %Boolean = 1)
     set ^Config("CodeTidy","indentString") = "    "
 }
 
+Method TestAutoTweakOptions(DeleteCompFiles As %Boolean = 1)
+{
+    Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
+    set referenceClassItemName = "TestPackage.AutoTweakTestClass.cls"
+    set referenceClassName = referenceRoot_"before/"_referenceClassItemName
+    
+
+    // Run CodeTidy with auto-tweak enabled
+    set ^Config("CodeTidy","tweak") = "auto"
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+    
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.AutoTweakTestClassEnabled.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+    
+
+    // Run CodeTidy with auto-tweak disabled
+    set ^Config("CodeTidy","tweak") = ""
+    Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
+
+    Do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+    set resultClass = "TestPackage.AutoTweakTestClassDisabled.cls"
+    Set truthFile = referenceRoot_"after/"_resultClass
+    Set exportFile = referenceRoot_"compare/"_resultClass
+    // Note: this appends an extra newline at the end. "after" files need this.
+    Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
+    Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
+    if DeleteCompFiles{
+        Do ##class(%Library.File).Delete(exportFile)
+    }
+}
+
 Method TestExpansionOptions(DeleteCompFiles As %Boolean = 1)
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
