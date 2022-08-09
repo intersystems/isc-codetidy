@@ -271,7 +271,11 @@ ClassMethod FindNamespaceForInternalName(pInternalName As %String) As %String
 		quit tNamespace
 	}
 	
-	set tSettings = ##class(pkg.isc.codetidy.extension.UniversalSettings).%Get(.tSC)
+	try {
+		set tSettings = ##class(pkg.isc.codetidy.extension.UniversalSettings).%Get(.tSC)
+	} catch e { // we are running in a namespace without CodeTidy - eg, when compiling embedded SQL
+		set tSC = e.AsStatus()
+	}
 	if $$$ISERR(tSC) || 'tSettings.MappedSourceControl {
 		quit tNamespace
 	}
