@@ -1,6 +1,9 @@
 ^INC^Save for Source Control^^~Format=IRIS.S~^UTF8
 %RO
 pkg.isc.codetidy.CodeTidy^INC^^^0
+#def1arg MappedValuesExist	$data(^||Studio.Extension.CodeStandards("Map"))
+#def1arg MappedValue(%args)	^||Studio.Extension.CodeStandards("Map", %args)
+.
 #define COSWhiteSpace 1
 #define COSLabel 3
 #define COSDots 4
@@ -43,6 +46,11 @@ pkg.isc.codetidy.CodeTidy^INC^^^0
 #define COSMacro "C"
 #define COSDelimiter "D"
 #define COSExtrinsicfunction "F"
+#define COSJSONBracket 38
+#define COSJSONDelimiter 39
+#define COSJSONKeyword "3A"
+#define COSEmbeddingOpen "3B"
+#define COSEmbeddingClose "3C"
 .
 #define CSSWhiteSpace 1
 #define CSSIdentifier 3

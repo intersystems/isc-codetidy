@@ -5,16 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased - 1.0.x]
+## [Unreleased - 1.1.x]
 
 ### Added 
--
+- Automatic tweaks have been reintroduced (after being removed due to breaking issues)
+- Pulled in a variety of minor changes from internal development
 
 ### Changed
--
+- 
 
 ### Fixed
--
+- Bracket matching for automatic tweaks now works
+- Configuration method doesn't prompt for an indentation string if automatic indentation is disabled
+- Unit tests described in module.xml
+- Added unit tests!
+- module.xml works with latest package manager version(s) and git-source-control - for some reason, Directory is needed. (This smells like a package manager bug, but the change is backward-compatible.)
 
 ### Security
 -

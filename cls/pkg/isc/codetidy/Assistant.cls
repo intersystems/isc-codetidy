@@ -975,7 +975,12 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         
         // Check for multi-line commands
         // Parameters passed on separate lines (inside parenthesis) are already catered for.
-        if (+$get(Handle("(")) = 0) && $extract(LineText, $length(LineText) = ",") {
+        // Similarly cater for json syntax, e.g.:
+		//  set myJSONObject = {
+		//   "jsonProp1" : "some value1",
+		//   "jsonProp2" : "some value2"
+		//  }
+        if (+$get(Handle("(")) = 0) && (+$get(Handle("{"))=0) && $extract(LineText, $length(LineText) = ",") {
             // Check for a dynamic object line
             set isDynamicObjectLine = LineText?1"".E1""":".E1"".E1""","
             if (+$get(Handle(",")) = 0) && 'isDynamicObjectLine {
@@ -1254,7 +1259,7 @@ Method DisplayCheckOutcome(InternalName As %String, Display As %Integer, ListToD
 /// <p>In addition to these checks JavaScript gets run through an open source verification tool.  This tool 
 /// performs some fairly strict checks and optimisation tips for JavaScript.  For example the tool will indicate 
 /// if a line is missing a semi-colon or if a variable has already been defined.
-Method CreateListOfAlerts(InternalName As %String, Output ListOfAlerts As %String, Output Count As %Integer, BackupFile As %String = "", IsEditsCheck As %Boolean = 0) As %Status
+Method CreateListOfAlerts(InternalName As %String, Output ListOfAlerts As %String, Output Count As %Integer, BackupFile As %String = "", IsEditsCheck As %Boolean = 1) As %Status
 {
     #; Methods such as <Property>Get or <Query>Execute override generated methods.
     #; In these cases the property or query may have a sufficient description.
@@ -1646,11 +1651,11 @@ Method CheckCode(Document As %String, Label As %String = "", Language As %String
                 for  {
                     set index = $order(..AlertPatterns(category, index))
                     if index = "" quit
-                    /*if 'IsEditsCheck {
-                    if ($list(..AlertPatterns(category, index), *) = "forEditsCheck") {
-                    continue
+                    if 'IsEditsCheck {
+                        if ($list(..AlertPatterns(category, index), *) = "forEditsCheck") {
+                            continue
+                        }
                     }
-                    }*/
                     
                     if lineTextLower?@$list(..AlertPatterns(category, index)) {
                         set showLine = 1
@@ -1854,3 +1859,4 @@ Method OnAfterSave(InternalName As %String, Object As %RegisteredObject = {$$$NU
 }
 
 }
+
