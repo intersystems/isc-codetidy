@@ -2,10 +2,10 @@
 <Export generator="IRIS" version="26">
 <Document name="isc.codetidy.ZPM"><Module>
   <Name>isc.codetidy</Name>
-  <Version>1.0.3</Version>
+  <Version>1.1.0+snapshot</Version>
   <Packaging>module</Packaging>
-  <Resource Name="pkg.isc.codetidy.PKG" />
-  <Resource Name="pkg.isc.codetidy.CodeTidy.INC" />
+  <Resource Name="pkg.isc.codetidy.PKG" Directory="cls" />
+  <Resource Name="pkg.isc.codetidy.CodeTidy.INC" Directory="inc" />
   <UnitTest Name="/tests" Format="UDL" Package="pkg.isc.codetidy.test" />
   <LifecycleClass>Module</LifecycleClass>
 </Module>

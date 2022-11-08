@@ -412,6 +412,38 @@ ClassMethod InstallESLint() As %Status
 	quit sc
 }
 
+/// This method find the matching ")" for the nearest "(" in pString from pStartIndex.
+/// If no matching brace is found, it returns an error. 
+/// If there is no "(" in the string from the pStartIndex, then it returns 0. 
+ClassMethod FindMatchingBracket(pString As %String, pStartIndex As %Integer = 0) As %Numeric
+{
+	set count = 0
+	
+	set firstBracket = $find(pString, "(", pStartIndex-1)
+
+    if (firstBracket = 0){
+        quit 0
+    }
+	
+	set count = count + 1
+	set matchingBracketPos = 0
+
+	for i=firstBracket:1:$length(pString){
+		set ch = $extract(pString, i)
+		set count = count + $case(ch, "(":1, ")":-1, :0)
+
+		if (count = 0){
+			set matchingBracketPos = i
+			quit
+		}
+	}
+    if (count '= 0){
+        write !, "Bad string, matching bracket not found."
+        quit 0
+    }
+    quit matchingBracketPos
+}
+
 /// Returns the value from the global if it exists.
 /// Defaults to 1
 ClassMethod GetFormatOnSave() As %Boolean
@@ -578,3 +610,4 @@ ClassMethod GetESLintConfig() As %String
 }
 
 }
+

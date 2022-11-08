@@ -108,12 +108,75 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 			#; Apply code changes that should always be used.
 			kill msgType
 			set msgText = ""
+
+			#; %request.Get -> $Get(%request.Data
+			set charIndex = $find(lineText, "%request.Get(")
+			if charIndex {
+				set msgType("PERF")=""
+				set msgText = msgText_$listbuild("$Get(%request.Data(""X"",1)) improves performance")
+				set endIndex = ##class(pkg.isc.codetidy.Utils).FindMatchingBracket(lineText, charIndex)
+				if endIndex {
+					#; The second parameter to %request.Get is the default value.
+					set params = $extract(lineText,charIndex,endIndex-2)
+					set lineText = $extract(lineText, 1, charIndex-14)_"$g(%request.Data("_$extract(lineText, charIndex, endIndex)_$extract(lineText, endIndex, *)
+				}
+			}
+
+			#; %session.Get -> $Get(%session.Data
+			set charIndex = $find(lineText, "%session.Get(")
+			if charIndex {
+				set msgType("PERF")=""
+				set msgText = msgText_$listbuild("$Get(%session.Data(""X"")) improves performance")
+				set endIndex = ##class(pkg.isc.codetidy.Utils).FindMatchingBracket(lineText, charIndex)
+				if endIndex {
+					#; The second parameter to %session.Get is the default value.
+					set params = $extract(lineText,charIndex,endIndex-2)
+					set lineText = $extract(lineText, 1, charIndex-14)_"$g(%session.Data("_$extract(lineText, charIndex, endIndex)_$extract(lineText, endIndex, *)
+					write !,lineText
+				}
+			}
+
+			#; rs.GetDataByName( -> $Get(rs.Data(
+			#; The functionality should be extended to cater for any variable names.
+			set charIndex = $find(lineText, ".GetDataByName(")
+			if charIndex {
+				set msgType("PERF")=""
+				set msgText = msgText_$listbuild("$Get(rs.Data(col)) improves performance")
+				set endIndex = ##class(pkg.isc.codetidy.Utils).FindMatchingBracket(lineText, charIndex)
+				set columnName = $extract(lineText,charIndex,endIndex-1)
+				#; Get the %ResultSet variable
+				set var = ""
+				for charIndex = charIndex-16:-1:0 {
+					set varChar=$extract(lineText,charIndex)
+					if varChar'?1(1A,1N) quit
+					set var = varChar_var
+				}
+				if endIndex {
+					set lineText = $extract(lineText, 1, charIndex)_"$g("_var_".Data("_columnName_"))"_$extract(lineText, endIndex, *)
+				}
+			}
+
+			#; rs.Get( -> $Get(rs.Data(
+			#; This now caters to any variable with the %ResultSet type
+			set pointer = 0
+			while $listnext(ResultSetVars, pointer, var) {
+				set charIndex = $find(lineText, var_".Get(")
+				if charIndex {
+					set msgType("PERF")=""
+					set msgText = msgText_$listbuild("$get("_var_".Data(col)) improves performance")
+					set endIndex = ##class(pkg.isc.codetidy.Utils).FindMatchingBracket(lineText, charIndex)
+					if endIndex {
+						set lineText = $extract(lineText, 1, charIndex-6-$length(var))_"$g("_var_".Data("_$extract(lineText,charIndex,endIndex-1)_"))"_$extract(lineText, endIndex, *)
+					}
+				}
+			}
 						
 			#; cursor:hand -> cursor:pointer
-			#if $system.Version.GetMajor()>5
+			if $system.Version.GetMajor()>5{
 				set alteredText = $replace(lineText, "cursor:hand", "cursor:pointer")
 				set alteredText = $replace(lineText, "cursor: hand", "cursor:pointer")
-			#else
+			}
+			else{
 				set outputText = "cursor:pointer"
 				set alteredText=lineText
 				for inputText = "cursor:hand", "cursor: hand" {
@@ -124,7 +187,8 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 						set alteredText=$extract(alteredText,1,pos-$length(inputText)-1)_outputText_$extract(alteredText,pos,$length(alteredText))
 					}
 				}
-			#endif
+			}
+
 			if alteredText '= lineText {
 				set lineText = alteredText
 				set msgType("COMPAT")=""
@@ -303,3 +367,4 @@ ClassMethod FileType(InternalName As %String) As %String [ Private ]
 }
 
 }
+
