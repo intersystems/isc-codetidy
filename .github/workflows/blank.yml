@@ -19,7 +19,7 @@ jobs:
       
       # ** FOR GENERAL USE, LIKELY NEED TO CHANGE **
       package: isc.codetidy
-      container_image: intersystemsdc/iris-community:2019:4.0.383.0-zpm
+      container_image: intersystemsdc/iris-community:latest
       
       # ** FOR GENERAL USE, MAY NEED TO CHANGE **
       build_flags: -dev -verbose
@@ -33,7 +33,7 @@ jobs:
         -verbose -DUnitTest.ManagerClass=TestCoverage.Manager -DUnitTest.JUnitOutput=/test-reports/junit.xml
         -DUnitTest.FailuresAreFatal=1 -DUnitTest.Manager=TestCoverage.Manager
         -DUnitTest.UserParam.CoverageReportClass=TestCoverage.Report.Cobertura.ReportGenerator
-        -DUnitTest.UserParam.CoverageReportFile=/source/cpverage/xml
+        -DUnitTest.UserParam.CoverageReportFile=/source/coverage/xml
       
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -41,10 +41,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       
-      - uses: actions/checkout@v3
-        with:
-          repository: timleavitt/forgery
-          path: forgery
 
       - name: Run Container
         run: |
@@ -61,14 +57,10 @@ jobs:
       - name: Install TestCoverage
         run: |
           echo "zpm \"install testcoverage\":1:1" > install-testcoverage
-          docker exec --interactive $instance iris session $instance -B < instal-testcoverage
+          docker exec --interactive $instance iris session $instance -B < install-testcoverage
           # WOrkaround for permissions issues in TestCoverage (creating directory for source export)
           chmod 777 $GITHUB_WORKSPACE
           
-      - name: Install Forgery
-        run: |
-          echo "zpm \"load /source/forgery\":1:1" > load-forgery
-          docker exec --interactive $instance iris session -B < load-forgery
           
       - name: Build and Test
         run: |
