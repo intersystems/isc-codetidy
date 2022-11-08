@@ -5,16 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased - 1.0.x]
+## [Unreleased - 1.1.x]
 
 ### Added 
--
+- Automatic tweaks have been reintroduced (after being removed due to breaking issues)
+- Pulled in a variety of minor changes from internal development
 
 ### Changed
--
+- 
 
 ### Fixed
--
+- Bracket matching for automatic tweaks now works
 
 ### Security
 -
