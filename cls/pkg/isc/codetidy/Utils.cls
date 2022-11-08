@@ -210,11 +210,16 @@ ClassMethod Configure() As %Status
 	do ##class(%Prompt).GetYesNo("Auto indent documents?", .result, .help)
 	set @..#INDENTGLOBAL = result
 
-	set result = ..GetIndentString()
-	set result = $Case(result,$c(9):"TAB",:result)
-	set help = "String to use for indentation."
-	do ##class(%Prompt).GetString("String to use for indent (type TAB for tab, or some number of spaces)", .result, .help)
-	set @..#INDENTSTRINGGLOBAL = $Case(result,"TAB":$c(9),:result)
+	if (result=1){
+		set result = ..GetIndentString()
+		set result = $Case(result,$c(9):"TAB",:result)
+		set help = "String to use for indentation."
+		do ##class(%Prompt).GetString("String to use for indent (type TAB for tab, or some number of spaces)", .result, .help)
+		set @..#INDENTSTRINGGLOBAL = $Case(result,"TAB":$c(9),:result)
+	}
+	else{
+		set @..#INDENTSTRINGGLOBAL = ""
+	}
 
 	set result = $Case(..GetParse(),"":0,:1)
 	set help = "Identify common coding inefficiencies and mistakes and help to fix them."
