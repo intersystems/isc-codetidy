@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Bracket matching for automatic tweaks now works
+- Configuration method doesn't prompt for an indentation string if automatic indentation is disabled
+- Unit tests described in module.xml
+- Added unit tests!
+- module.xml works with latest package manager version(s) and git-source-control - for some reason, Directory is needed. (This smells like a package manager bug, but the change is backward-compatible.)
 
 ### Security
 -

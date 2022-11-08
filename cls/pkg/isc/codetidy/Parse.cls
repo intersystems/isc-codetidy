@@ -367,3 +367,4 @@ ClassMethod FileType(InternalName As %String) As %String [ Private ]
 }
 
 }
+
