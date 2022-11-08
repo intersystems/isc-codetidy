@@ -33,7 +33,7 @@ jobs:
         -verbose -DUnitTest.ManagerClass=TestCoverage.Manager -DUnitTest.JUnitOutput=/test-reports/junit.xml
         -DUnitTest.FailuresAreFatal=1 -DUnitTest.Manager=TestCoverage.Manager
         -DUnitTest.UserParam.CoverageReportClass=TestCoverage.Report.Cobertura.ReportGenerator
-        -DUnitTest.UserParam.CoverageReportFile=/source/coverage/xml
+        -DUnitTest.UserParam.CoverageReportFile=/source/coverage.xml
       
 
     # Steps represent a sequence of tasks that will be executed as part of the job
