@@ -52,7 +52,7 @@ jobs:
         
       - name: Run Container
         run: |
-          # Create test_reports directory to share test results before running container
+          #Create test_reports directory to share test results before running container
           mkdir $test_reports
           chmod 777 $test_reports
           # Run InterSystems IRIS Instance
