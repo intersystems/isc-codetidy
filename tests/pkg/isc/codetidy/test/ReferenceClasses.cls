@@ -3,7 +3,7 @@ Class pkg.isc.codetidy.test.ReferenceClasses Extends %UnitTest.TestCase
 
 Property userConfig [ MultiDimensional ];
 
-Property userSourceControl;
+Property userSourceControl As %Library.String;
 
 Method OnBeforeAllTests() As %Status
 {
