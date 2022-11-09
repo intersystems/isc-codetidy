@@ -2,12 +2,13 @@ Class pkg.isc.codetidy.test.ReferenceClasses Extends %UnitTest.TestCase
 {
 
 Property userConfig [ MultiDimensional ];
+
 Property userSourceControl;
 
 Method OnBeforeAllTests() As %Status
 {
     set ..userSourceControl = ##class(%Studio.SourceControl.Interface).SourceControlClassGet()
-    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet("")
+    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet()
     merge ..userConfig = ^Config("CodeTidy")
 
     set ^Config("CodeTidy","brace")=1
