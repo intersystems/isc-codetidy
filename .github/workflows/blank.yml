@@ -69,7 +69,7 @@ jobs:
           # Test package is compiled first as a workaround for some dependency issues.
           echo "do \$System.OBJ.CompilePackage(\"$test_package\",\"ckd\") " > test
           # Run tests
-          echo "set ^%oddEnv(""callererrorinfo"") = 2"
+          echo "set ^%oddEnv(\"callererrorinfo\") = 2"
           echo "zpm \"$package test -only $test_flags\":1:1" >> test
           docker exec --interactive $instance iris session $instance -B < build && docker exec --interactive $instance iris session $instance -B < test &&bash <(curl -s https://codecov.io/bash)
           
