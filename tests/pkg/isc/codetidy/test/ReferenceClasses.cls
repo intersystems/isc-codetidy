@@ -7,7 +7,7 @@ Property userSourceControl;
 Method OnBeforeAllTests() As %Status
 {
     set ..userSourceControl = ##class(%Studio.SourceControl.Interface).SourceControlClassGet()
-    do ##class(%Studio.SourceControl.Interface).SourceControlSet("")
+    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet("")
     merge ..userConfig = ^Config("CodeTidy")
 
     set ^Config("CodeTidy","brace")=1
