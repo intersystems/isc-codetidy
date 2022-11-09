@@ -2,9 +2,12 @@ Class pkg.isc.codetidy.test.ReferenceClasses Extends %UnitTest.TestCase
 {
 
 Property userConfig [ MultiDimensional ];
+Property userSourceControl;
 
 Method OnBeforeAllTests() As %Status
 {
+    set ..userSourceControl = ##class(%Studio.SourceControl.Interface).SourceControlClassGet()
+    do ##class(%Studio.SourceControl.Interface).SourceControlSet("")
     merge ..userConfig = ^Config("CodeTidy")
 
     set ^Config("CodeTidy","brace")=1
@@ -498,6 +501,8 @@ Method TestSpacingOptions(DeleteCompFiles As %Boolean = 1)
 
 Method %OnClose() As %Status
 {
+    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet(..userSourceControl)
+    kill ^Config("CodeTidy")
     merge ^Config("CodeTidy") = ..userConfig
     quit $$$OK
 }
