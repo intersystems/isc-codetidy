@@ -8,7 +8,7 @@ Property userSourceControl As %String;
 Method OnBeforeAllTests() As %Status
 {
     set ..userSourceControl = ##class(%Studio.SourceControl.Interface).SourceControlClassGet()
-    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet("%Studio.SourceControl.ISC")
+    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet("")
     do ##class(pkg.isc.codetidy.Utils).SetupExtension()
     merge ..userConfig = ^Config("CodeTidy")
 
