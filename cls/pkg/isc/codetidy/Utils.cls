@@ -343,12 +343,17 @@ ClassMethod SetupExtension() As %Status
 		if (oldSourceControlClass = newSourceControlClass) {
 			quit
 		}
-		
+
 		// Enable pkg.isc.codetidy.Composite
 		$$$ThrowOnError(##class(%Studio.SourceControl.Interface).SourceControlClassSet(newSourceControlClass, $namespace))
 		
-		// Set up primary and sub extensions
-		do $classmethod(newSourceControlClass, "SetExtensionClasses", oldSourceControlClass, $listbuild(codeTidyExtension))
+		if (oldSourceControlClass = "") {
+			// CodeTidy is primary extension
+			$$$ThrowOnError($classmethod(newSourceControlClass, "SetExtensionClasses", codeTidyExtension, ""))
+		} else {
+			// Set up primary and sub extensions
+			$$$ThrowOnError($classmethod(newSourceControlClass, "SetExtensionClasses", oldSourceControlClass, $listbuild(codeTidyExtension)))
+		}
 	} catch e {
 		set sc = e.AsStatus()
 	}
