@@ -47,9 +47,10 @@ jobs:
           # Create test_reports directory to share test results before running container
           mkdir $test_reports
           chmod 777 $test_reports
+          
           # Run InterSystems IRIS Instance
           docker pull $container_image
-          docker run -d -h $instance --name $instance -v $GITHUB_WORKSPACE:/source -v $GITHUB_WORKSPACE/$test_reports:/$test_reports --init $container_image
+          docker run -d -h $instance --name $instance -v $GITHUB_WORKSPACE:/source:rw -v $GITHUB_WORKSPACE/$test_reports:/$test_reports --init $container_image
           echo halt > wait
           # Wait for instance to be ready
           until docker exec --interactive $instance iris session $instance < wait; do sleep 1; done
@@ -60,6 +61,7 @@ jobs:
           docker exec --interactive $instance iris session $instance -B < install-testcoverage
           # WOrkaround for permissions issues in TestCoverage (creating directory for source export)
           chmod 777 $GITHUB_WORKSPACE
+          chmod -R 777 $GITHUB_WORKSPACE/tests/_reference/compare
           
           
       - name: Build and Test
