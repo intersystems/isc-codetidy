@@ -38,7 +38,6 @@ Method TestResequenceOptions()
     set referenceClassItemName = "TestPackage.ResequenceTestClass.cls"
     set referenceClassName = referenceRoot_"before/"_referenceClassItemName
     
-
     // Run CodeTidy with resequencing enabled
     set ^Config("CodeTidy","resequence") = 1
     Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
@@ -48,6 +47,10 @@ Method TestResequenceOptions()
     set resultClass = "TestPackage.ResequenceTestClassEnabled.cls"
     Set truthFile = referenceRoot_"after/"_resultClass
     Set exportFile = referenceRoot_"compare/"_resultClass
+
+    set currentDir = ..Manager.CurrentDir
+    zw currentDir,referenceRoot,exportFile
+
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
