@@ -5,7 +5,7 @@ Property userConfig [ MultiDimensional ];
 
 Property userSourceControl As %String;
 
-Property deleteFiles As %Boolean [ InitialExpression = 1 ];
+Property deleteFiles As %Boolean [ InitialExpression = 0 ];
 
 Method OnBeforeAllTests() As %Status
 {
@@ -13,10 +13,6 @@ Method OnBeforeAllTests() As %Status
     do ##class(%Studio.SourceControl.Interface).SourceControlClassSet("")
     do ##class(pkg.isc.codetidy.Utils).SetupExtension()
     merge ..userConfig = ^Config("CodeTidy")
-
-    if ..Manager.UserFields.GetAt("Preserve") {
-        set ..deleteFiles = 0
-    }
 
     set ^Config("CodeTidy","brace")=1
     set ^Config("CodeTidy","capital")=0
