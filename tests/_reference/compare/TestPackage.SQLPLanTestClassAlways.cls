@@ -7,10 +7,10 @@ Method MethodA()
 {
     #sqlcompile Select = Display
     &SQL(
-        SELECT Action INTO :a FROM %Studio_SourceControl.Change -- ;
-        -- ; Relative Cost = 1447000
+        SELECT TOP 1 1 INTO :a -- ;
+        -- ; Relative Cost = 600400
         -- ;
-        -- ; Read index map %Studio_SourceControl.Change.ChangeList, looping on %SQLUPPER(ItemFile), CommittedTime, and ID.
+        -- ; Read master map %TSQL_sys.snf.Map1, looping on ID.
         -- ; For each row:
         -- ;     Output the row.
     )
@@ -24,10 +24,10 @@ Method MethodA()
     do $system.SQL.Util.SetOption("SelectMode", 1)
     write "changed select mode to: ", $system.SQL.Util.GetOption("SelectMode"), !
     &SQL(
-        SELECT InternalName INTO :b FROM %Studio_SourceControl.Change
-        -- ; Relative Cost = 5107000
+        SELECT TOP 1 1 INTO :b
+        -- ; Relative Cost = 600400
         -- ;
-        -- ; Read master map %Studio_SourceControl.Change.IDKEY, looping on ID.
+        -- ; Read master map %TSQL_sys.snf.Map1, looping on ID.
         -- ; For each row:
         -- ;     Output the row.
     )

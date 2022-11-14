@@ -6,10 +6,10 @@ Property BGD As %String;
 Method MethodA()
 {
     #sqlcompile Select = Display
-    &sql(SELECT Action into :a from %Studio_SourceControl.Change -- ;
-        -- ; Relative Cost = 1447000
+    &sql(select top 1 1 into :a -- ;
+        -- ; Relative Cost = 600400
         -- ;
-        -- ; Read index map %Studio_SourceControl.Change.ChangeList, looping on %SQLUPPER(ItemFile), CommittedTime, and ID.
+        -- ; Read master map %TSQL_sys.snf.Map1, looping on ID.
         -- ; For each row:
         -- ;     Output the row.
     )
@@ -22,7 +22,7 @@ Method MethodA()
     write "1st date of birth is ", a, !
     do $system.SQL.Util.SetOption("SelectMode", 1)
     write "changed select mode to: ", $system.SQL.Util.GetOption("SelectMode"), !
-    &sql(SeleCT InternalName into :b FrOm %Studio_SourceControl.Change)
+    &sql(SeLeCT tOp 1 1 into :b)
     write "2nd date of birth is ", b
 }
 
