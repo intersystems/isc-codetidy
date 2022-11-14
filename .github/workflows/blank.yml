@@ -61,6 +61,7 @@ jobs:
           docker exec --interactive $instance iris session $instance -B < install-testcoverage
           # WOrkaround for permissions issues in TestCoverage (creating directory for source export)
           chmod 777 $GITHUB_WORKSPACE
+          chmod -R 777 $GITHUB_WORKSPACE/tests/_reference/compare
           
           
       - name: Build and Test
