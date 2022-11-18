@@ -3,8 +3,15 @@ Class pkg.isc.codetidy.test.ReferenceClasses Extends %UnitTest.TestCase
 
 Property userConfig [ MultiDimensional ];
 
+Property userSourceControl As %String;
+
+Property deleteFiles As %Boolean [ InitialExpression = 0 ];
+
 Method OnBeforeAllTests() As %Status
 {
+    set ..userSourceControl = ##class(%Studio.SourceControl.Interface).SourceControlClassGet()
+    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet("")
+    do ##class(pkg.isc.codetidy.Utils).SetupExtension()
     merge ..userConfig = ^Config("CodeTidy")
 
     set ^Config("CodeTidy","brace")=1
@@ -25,13 +32,12 @@ Method OnBeforeAllTests() As %Status
     quit $$$OK
 }
 
-Method TestResequenceOptions(DeleteCompFiles As %Boolean = 1)
+Method TestResequenceOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.ResequenceTestClass.cls"
     set referenceClassName = referenceRoot_"before/"_referenceClassItemName
     
-
     // Run CodeTidy with resequencing enabled
     set ^Config("CodeTidy","resequence") = 1
     Do $$$AssertStatusOK($System.OBJ.Load(referenceClassName), "ck")
@@ -41,10 +47,14 @@ Method TestResequenceOptions(DeleteCompFiles As %Boolean = 1)
     set resultClass = "TestPackage.ResequenceTestClassEnabled.cls"
     Set truthFile = referenceRoot_"after/"_resultClass
     Set exportFile = referenceRoot_"compare/"_resultClass
+
+    set currentDir = ..Manager.CurrentDir
+    zw currentDir,referenceRoot,exportFile
+
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
     
@@ -61,12 +71,12 @@ Method TestResequenceOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 }
 
-Method TestIndentationOptions(DeleteCompFiles As %Boolean = 1)
+Method TestIndentationOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.IndentationTestClass.cls"
@@ -84,7 +94,7 @@ Method TestIndentationOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -100,7 +110,7 @@ Method TestIndentationOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -116,7 +126,7 @@ Method TestIndentationOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -124,7 +134,7 @@ Method TestIndentationOptions(DeleteCompFiles As %Boolean = 1)
     set ^Config("CodeTidy","indentString") = "    "
 }
 
-Method TestAutoTweakOptions(DeleteCompFiles As %Boolean = 1)
+Method TestAutoTweakOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.AutoTweakTestClass.cls"
@@ -143,7 +153,7 @@ Method TestAutoTweakOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
     
@@ -160,12 +170,12 @@ Method TestAutoTweakOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 }
 
-Method TestExpansionOptions(DeleteCompFiles As %Boolean = 1)
+Method TestExpansionOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.ExpansionTestClass.cls"
@@ -186,7 +196,7 @@ Method TestExpansionOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -205,7 +215,7 @@ Method TestExpansionOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -224,14 +234,14 @@ Method TestExpansionOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
     set ^Config("CodeTidy","codetidy") = 1
 }
 
-Method TestCommentStyleOptions(DeleteCompFiles As %Boolean = 1)
+Method TestCommentStyleOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.CommentStyleTestClass.cls"
@@ -251,7 +261,7 @@ Method TestCommentStyleOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -269,7 +279,7 @@ Method TestCommentStyleOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -287,12 +297,12 @@ Method TestCommentStyleOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 }
 
-Method TestSQLPlanOptions(DeleteCompFiles As %Boolean = 1)
+Method TestSQLPlanOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.SQLPLanTestClass.cls"
@@ -312,7 +322,7 @@ Method TestSQLPlanOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -330,7 +340,7 @@ Method TestSQLPlanOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -348,12 +358,12 @@ Method TestSQLPlanOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 }
 
-Method TestSQLCaseOptions(DeleteCompFiles As %Boolean = 1)
+Method TestSQLCaseOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.SQLCaseTestClass.cls"
@@ -373,7 +383,7 @@ Method TestSQLCaseOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -391,7 +401,7 @@ Method TestSQLCaseOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 
@@ -409,12 +419,12 @@ Method TestSQLCaseOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 }
 
-Method TestBraceOptions(DeleteCompFiles As %Boolean = 1)
+Method TestBraceOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.BraceTestClass.cls"
@@ -433,7 +443,7 @@ Method TestBraceOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
     
@@ -450,12 +460,12 @@ Method TestBraceOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 }
 
-Method TestSpacingOptions(DeleteCompFiles As %Boolean = 1)
+Method TestSpacingOptions()
 {
     Set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir_"/../../../../_reference")
     set referenceClassItemName = "TestPackage.SpacingTestClass.cls"
@@ -474,7 +484,7 @@ Method TestSpacingOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
     
@@ -491,13 +501,15 @@ Method TestSpacingOptions(DeleteCompFiles As %Boolean = 1)
     // Note: this appends an extra newline at the end. "after" files need this.
     Do $$$AssertStatusOK($System.OBJ.ExportUDL(referenceClassItemName,exportFile))
     Do $$$AssertFilesSame(exportFile,truthFile,"Files match: "_referenceClassItemName)
-    if DeleteCompFiles{
+    if ..deleteFiles {
         Do ##class(%Library.File).Delete(exportFile)
     }
 }
 
 Method %OnClose() As %Status
 {
+    do ##class(%Studio.SourceControl.Interface).SourceControlClassSet(..userSourceControl)
+    kill ^Config("CodeTidy")
     merge ^Config("CodeTidy") = ..userConfig
     quit $$$OK
 }
