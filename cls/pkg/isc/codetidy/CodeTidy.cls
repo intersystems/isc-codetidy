@@ -138,7 +138,7 @@ ClassMethod CSP(pCspName As %String, pSaveChanges = 0) As %Status
 }
 
 /// Process a stream
-ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "COS", sqlSchemaName As %String, pInfo As %String = "")
+ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "COS", sqlSchemaName As %String = "", pInfo As %String = "")
 {
 	set outstream = ##class(%Stream.TmpCharacter).%New()
 	do outstream.Rewind()
