@@ -79,7 +79,7 @@ ClassMethod Class(pClassName As %String, pSaveChanges = 0) As %Status
 			do triggerStream.WriteLine($piece(triggerDefinition.Code, $char(13, 10) , lineNumber) )
 		}
 		// Process the stream
-		do ..ProcessStream(triggerStream, triggerDefinition.Language, sqlSchemaName, "Trigger:" _ ClassName _ ":" _ triggerDefinition.Name)
+		do ..ProcessStream(triggerStream, triggerDefinition.Language, sqlSchemaName, "Trigger:" _ pClassName _ ":" _ triggerDefinition.Name)
 		// and copy from stream back to string
 		do triggerStream.Rewind()
 		set triggerString = ""
@@ -920,7 +920,14 @@ ClassMethod GetSQLPlan(ByRef SQL As %String, Schema As %String, Output Plan As %
 		set packages = ""
 		if Schema '= "" set packages = packages _ $listbuild(Schema)
 		if Schema '= "SQLUser" set packages = packages _ $listbuild("SQLUser")
-		do $system.SQL.Explain(.sql, {"quiet":1, "preparse":1, "selectmode":1}, , .%plan)
+
+		// Version detection as $system.SQL.ShowPlan is now deprecated
+		if $$$comMemberDefined("%System.SQL", $$$cCLASSmethod, "Explain") {
+			do $system.SQL.Explain(.sql, {"quiet":1, "preparse":1, "selectmode":1}, , .%plan)
+		}
+		else {
+			do $system.SQL.ShowPlan(.sql, 1, 0, packages, , , , , 1)
+		}
 		
 		// Check for plan
 		if $data(%plan(1)) {
