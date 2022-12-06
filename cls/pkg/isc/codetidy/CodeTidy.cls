@@ -38,6 +38,7 @@ ClassMethod Class(pClassName As %String, pSaveChanges = 0) As %Status
 	set oClass = ##class(%Dictionary.ClassDefinition).%OpenId(pClassName, , .tSc)
 	if $$$ISERR(tSc) quit tSc
 	
+	set sqlSchemaName = $$DetermineSchemaName^%occClass(pClassName)
 	for j = 1:1:oClass.Methods.Count() {
 		set oMth = oClass.Methods.GetAt(j)
 		
