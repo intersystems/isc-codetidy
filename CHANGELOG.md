@@ -5,14 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased - 1.1.x]
+## [1.1.0] - 2022-12-06
 
 ### Added 
 - Automatic tweaks have been reintroduced (after being removed due to breaking issues)
 - Pulled in a variety of minor changes from internal development
-
-### Changed
-- 
 
 ### Fixed
 - Bracket matching for automatic tweaks now works
@@ -20,15 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests described in module.xml
 - Added unit tests!
 - module.xml works with latest package manager version(s) and git-source-control - for some reason, Directory is needed. (This smells like a package manager bug, but the change is backward-compatible.)
-
-### Security
--
-
-### Removed
--
-
-### Deprecated
--
+- Fixed `<UNDEFINED>` error parsing triggers
+- Fixed SQL plan options for earlier IRIS version without $System.SQL.Explain (#25)
 
 ## [1.0.3] - 2022-07-19
 ### Fixed
