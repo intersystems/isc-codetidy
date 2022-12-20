@@ -293,7 +293,8 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
                 // Get the tokens for each line so that the command can be determined
                 if (method.Language = $$$langObjectScript) || (method.Language = "") {
                     kill tokens
-                    $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetMethodImplementation(classDef.Name, method.Name, .tokens, $namespace))
+                    $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetMethodImplementation(classDef.Name, method.Name, .tmpTokens, $namespace))
+                    do ..JSONLint(.tmpTokens,method.Implementation,.tokens)
                     do method.Implementation.Rewind()
                 }
 
@@ -424,6 +425,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
             if (language = $$$langObjectScript) || (language = "") {
                 kill tokens
                 $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetRoutineImplementation(InternalName, .tokens, $namespace))
+                do ..JSONLint(.tokens,routineDef.Code,.newTokens)
                 do routineDef.Code.Rewind()
             }
 
@@ -548,6 +550,177 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
         write !, "Encountered "_$length($system.Status.GetErrorCodes(status), ",")_ " errors during indentation in "_duration_"."
     }
     quit status
+}
+
+ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTokens)
+{
+    kill newTokens
+    set isJSON = 0
+    set oneDimArray = 1
+
+    //Vertical Spacing for JSON Array
+    for line=1:1:$Get(tokens,0) {
+        set lineTokens = tokens(line)
+        set pointer = 0
+        set newLineTokens = ""
+        while $listnext(lineTokens,pointer,token) {
+            set $ListBuild(lang, type, fragment) = token
+            set newLineTokens = newLineTokens _ $ListBuild(token)
+
+            // Handle special rules for line breaks/removing white space
+            // for JSON brackets and delimiters. 
+            if (lang = "COS") && (type = "JSON bracket") {
+                // For {, enforce line break
+                // For }, enforce , or ] after, then line break
+                // For [, enforce { after, then line break
+                // Additionally, if next line starts with { or }, enforce line break
+                if (fragment = "{") {
+                    set pointerCopy = pointer
+                    if $listnext(lineTokens,pointerCopy,dummy) {
+                        set newTokens($i(newTokens)) = newLineTokens
+                        set newLineTokens = ""
+                    }
+                } elseif (fragment = "}") {
+                    set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
+                    set $ListBuild(nextLang, nextType, nextFragment) = nextToken
+                    if ((nextToken '= "") && ((nextFragment = "]") || (nextFragment = ","))) {
+                        do $i(isJSON,-1*((nextFragment = "]")))
+                        set newLineTokens = newLineTokens _ $ListBuild(nextToken)
+                        set line = nextLine
+                        set lineTokens = nextLineTokens
+                        set pointer = nextPointer
+                        set newTokens($i(newTokens)) = newLineTokens
+                        set newLineTokens = ""
+                    }
+                } elseif (fragment = "[") {
+                    set oneDimArray = 0
+                    do $i(isJSON)
+                    set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
+                    if nextToken = $ListBuild("COS","JSON bracket","{") {
+                        set newLineTokens = newLineTokens _ $ListBuild(nextToken)
+                        set line = nextLine
+                        set lineTokens = nextLineTokens
+                        set pointer = nextPointer
+                        set pointerCopy = pointer
+                        if $listnext(lineTokens,pointerCopy,dummy) {
+                            set newTokens($i(newTokens)) = newLineTokens
+                            set newLineTokens = ""
+                        }
+                    }
+                }
+            } elseif type '= "White Space"{
+                set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
+                set pointerCopy = pointer
+                if (($listnext(lineTokens, pointerCopy, dummy)) && ((nextToken = $ListBuild("COS","JSON bracket","}"))||(('oneDimArray)&&(nextToken = $ListBuild("COS","JSON bracket","{"))))) {
+                    break
+                    set newTokens($i(newTokens)) = newLineTokens
+                    set newLineTokens = ""
+                }
+            }
+        }
+        if ((newLineTokens '= "") || (isJSON = 0)) {
+            set newTokens($i(newTokens)) = newLineTokens
+        }
+        
+    }
+    //Horizontal Spacing for JSON Arrays
+    kill tokens
+    merge tokens = newTokens
+    kill newTokens
+    kill newLineTokens
+    set indents = 1
+    set isJSON = 0
+    for line=1:1:$Get(tokens,0) {
+        set lineTokens = tokens(line)
+        set pointer = 0
+        set incIndent = 0
+        set decIndent = 0
+        set newLineTokens = ""
+        while $listnext(lineTokens, pointer, token) {
+            set $ListBuild(lang, type, fragment) = token
+
+            // Number of opening [ determine how many closing ] are needed
+            // to exit the array and then be outside JSON
+            if token = $ListBuild("COS","JSON bracket","[") {
+                do $i(isJSON)
+            } elseif token = $ListBuild("COS","JSON bracket","]") {
+                do $i(isJSON,-1)
+            }
+
+            //Determine whether the next line should be indented by 1
+            //or if current line should be unindented by 1
+            if isJSON {
+                if (fragment = "{" || fragment = "[") {
+                    set incIndent = 1
+                } elseif (fragment = "}" || fragment = "]") {
+                    set decIndent = 1
+                }
+                if ((type '= "White Space") || (fragment = " ")) {
+                    set newLineTokens = newLineTokens _ $ListBuild(token)
+                }
+            } else {
+                set newLineTokens = newLineTokens _ $ListBuild(token)
+            }
+        }
+
+        //Apply indentation and increase or decrease for next or current line
+        set indentChar = ##class(pkg.isc.codetidy.Utils).GetIndentString()
+        if newLineTokens '= "" {
+            if (isJSON && incIndent) {
+                for indent=1:1:indents {
+                    set newLineTokens = $ListBuild($ListBuild("COS","White Space",indentChar)) _ newLineTokens
+                }
+                do $i(indents)
+            } elseif (isJSON && decIndent) {
+                do $i(indents,-1)
+                for indent=1:1:indents {
+                    set newLineTokens = $ListBuild($ListBuild("COS","White Space",indentChar)) _ newLineTokens
+                }
+            } else {
+                for indent=1:1:indents {
+                    set newLineTokens = $ListBuild($ListBuild("COS","White Space",indentChar)) _ newLineTokens
+                }
+            }
+        }
+
+        //Ignore blank lines if in JSON array
+        if ((newLineTokens '= "") || (isJSON = 0)) {
+            set newTokens($i(newTokens)) = newLineTokens
+        }
+        
+        
+    }
+    
+    // Update source stream
+    do sourceStream.Clear()
+    for i=1:1:$Get(newTokens,0) {
+        set lineTokens = newTokens(i)
+        set pointer = 0
+        while $listnext(lineTokens,pointer,token) {
+            do sourceStream.Write($ListGet(token,3))
+        }
+        do sourceStream.WriteLine()
+    }
+}
+
+ClassMethod NextNonWhitespaceToken(ByRef tokens, line As %Integer, lineTokens As %List, pointer As %Integer, Output newLine, Output newLineTokens, Output newPointer) As %List
+{
+    // Parse through tokens to find next non-whitespace token,
+    // returning the token and getting the new pointer and line number
+    set newLine = line, newLineTokens = lineTokens, newPointer = pointer
+    for {
+        while $ListNext(newLineTokens,newPointer,newToken) {
+            set $listbuild(lang,type,fragment) = newToken
+            if (type '= "White Space") {
+                return newToken
+            }
+        }
+        set newLine = newLine + 1
+        if '$data(tokens(newLine),newLineTokens)#2 {
+            return ""
+        }
+        set newPointer = 0
+    }
 }
 
 /// Apply standard indentation to a given line of code.
@@ -685,11 +858,12 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         set openTags(3) = "&javascript<"
         set openTags(4) = "&html<"
         set openTags(5) = "/*"
-        if IsJSON {
-            set openTags(6) = "["
-            set openTags = $increment(openTags)
+        /*if IsJSON {
+			// disabled to debug json bracket handling
+			set openTags(6) = "["
+			set openTags = $increment(openTags)
         }
-
+        */
         // if previously in = indent and new command shows up decrease indent
         // also decrease indent for comments
         if $get(Handle("decOnNextCommand")) &&
@@ -915,7 +1089,7 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         set openTags(3) = "&javascript<"
         set openTags(4) = "&html<"
         set openTags(5) = "/*"
-        if IsJSON {
+        /*if IsJSON {
             set openTags(6) = "["
             set openTags = $increment(openTags)
 
@@ -934,7 +1108,7 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
                 set Handle("indentedJSON") = 1
             }
         }
-
+        */
         // Check for = or _ at the end of the line and indent next line
         set lastChar = $extract(LineText, $length(LineText))
         if ('IsJSON) && (command '= "") && ((lastChar = "=") || (lastChar = "_")) && ('$get(Handle("decOnNextCommand"))) {
@@ -1859,4 +2033,3 @@ Method OnAfterSave(InternalName As %String, Object As %RegisteredObject = {$$$NU
 }
 
 }
-
