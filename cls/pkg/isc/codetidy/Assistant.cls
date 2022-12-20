@@ -863,12 +863,7 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         set openTags(3) = "&javascript<"
         set openTags(4) = "&html<"
         set openTags(5) = "/*"
-        /*if IsJSON {
-			// disabled to debug json bracket handling
-			set openTags(6) = "["
-			set openTags = $increment(openTags)
-        }
-        */
+    
         // if previously in = indent and new command shows up decrease indent
         // also decrease indent for comments
         if $get(Handle("decOnNextCommand")) &&
@@ -1094,26 +1089,7 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         set openTags(3) = "&javascript<"
         set openTags(4) = "&html<"
         set openTags(5) = "/*"
-        /*if IsJSON {
-            set openTags(6) = "["
-            set openTags = $increment(openTags)
-
-            if ($get(Handle("indentedJSON")) = 1) && ($extract(LineText, $length(LineText)) = ",") {
-                kill Handle("indentedJSON")
-                set incIndent = incIndent - 1
-            }
-
-            // Extra JSON rule: if ending with [{ in JSON, only indent once
-            if $extract(LineText, $length(LineText) - 1, *) = "[{" {
-                set incIndent = incIndent - 1
-            } elseif (LineText = "}]") {
-                set incIndent = $increment(incIndent)
-            } elseif ($extract(LineText, $length(LineText)) = ":") {
-                set incIndent = $increment(incIndent)
-                set Handle("indentedJSON") = 1
-            }
-        }
-        */
+        
         // Check for = or _ at the end of the line and indent next line
         set lastChar = $extract(LineText, $length(LineText))
         if ('IsJSON) && (command '= "") && ((lastChar = "=") || (lastChar = "_")) && ('$get(Handle("decOnNextCommand"))) {
