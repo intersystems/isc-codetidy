@@ -556,9 +556,11 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
 {
     kill newTokens
     set isJSON = 0
+
+    #; Special case detection of 1-D array in curly braces
     set oneDimArray = 1
 
-    //Vertical Spacing for JSON Array
+    #; Vertical Spacing for JSON Array
     for line=1:1:$Get(tokens,0) {
         set lineTokens = tokens(line)
         set pointer = 0
@@ -567,13 +569,15 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
             set $ListBuild(lang, type, fragment) = token
             set newLineTokens = newLineTokens _ $ListBuild(token)
 
-            // Handle special rules for line breaks/removing white space
-            // for JSON brackets and delimiters. 
+            #; Handle special rules for line breaks/removing white space
+            #; for JSON brackets and delimiters. 
+
+            #; Rules:
+            #; For {, enforce line break
+            #; For }, enforce , or ] after, then line break
+            #; For [, enforce { after, then line break
+            #; Additionally, if next line starts with { or }, enforce line break
             if (lang = "COS") && (type = "JSON bracket") {
-                // For {, enforce line break
-                // For }, enforce , or ] after, then line break
-                // For [, enforce { after, then line break
-                // Additionally, if next line starts with { or }, enforce line break
                 if (fragment = "{") {
                     set pointerCopy = pointer
                     if $listnext(lineTokens,pointerCopy,dummy) {
@@ -612,7 +616,6 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
                 set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
                 set pointerCopy = pointer
                 if (($listnext(lineTokens, pointerCopy, dummy)) && ((nextToken = $ListBuild("COS","JSON bracket","}"))||(('oneDimArray)&&(nextToken = $ListBuild("COS","JSON bracket","{"))))) {
-                    break
                     set newTokens($i(newTokens)) = newLineTokens
                     set newLineTokens = ""
                 }
@@ -623,13 +626,15 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
         }
         
     }
-    //Horizontal Spacing for JSON Arrays
+
+    #; Horizontal Spacing for JSON Arrays
     kill tokens
     merge tokens = newTokens
     kill newTokens
     kill newLineTokens
     set indents = 1
     set isJSON = 0
+
     for line=1:1:$Get(tokens,0) {
         set lineTokens = tokens(line)
         set pointer = 0
@@ -639,16 +644,16 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
         while $listnext(lineTokens, pointer, token) {
             set $ListBuild(lang, type, fragment) = token
 
-            // Number of opening [ determine how many closing ] are needed
-            // to exit the array and then be outside JSON
+            #; Number of opening [ determine how many closing ] are needed
+            #; to exit the array and then be outside JSON
             if token = $ListBuild("COS","JSON bracket","[") {
                 do $i(isJSON)
             } elseif token = $ListBuild("COS","JSON bracket","]") {
                 do $i(isJSON,-1)
             }
 
-            //Determine whether the next line should be indented by 1
-            //or if current line should be unindented by 1
+            #; Determine whether the next line should be indented by 1
+            #; or if current line should be unindented by 1
             if isJSON {
                 if (fragment = "{" || fragment = "[") {
                     set incIndent = 1
@@ -663,7 +668,7 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
             }
         }
 
-        //Apply indentation and increase or decrease for next or current line
+        #; Apply indentation and increase or decrease for next or current line
         set indentChar = ##class(pkg.isc.codetidy.Utils).GetIndentString()
         if newLineTokens '= "" {
             if (isJSON && incIndent) {
@@ -683,7 +688,7 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
             }
         }
 
-        //Ignore blank lines if in JSON array
+        #; Ignore blank lines if in JSON array
         if ((newLineTokens '= "") || (isJSON = 0)) {
             set newTokens($i(newTokens)) = newLineTokens
         }
@@ -705,8 +710,8 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
 
 ClassMethod NextNonWhitespaceToken(ByRef tokens, line As %Integer, lineTokens As %List, pointer As %Integer, Output newLine, Output newLineTokens, Output newPointer) As %List
 {
-    // Parse through tokens to find next non-whitespace token,
-    // returning the token and getting the new pointer and line number
+    #; Parse through tokens to find next non-whitespace token,
+    #; returning the token and getting the new pointer and line number
     set newLine = line, newLineTokens = lineTokens, newPointer = pointer
     for {
         while $ListNext(newLineTokens,newPointer,newToken) {
