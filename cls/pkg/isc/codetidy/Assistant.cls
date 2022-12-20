@@ -568,6 +568,9 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
         while $listnext(lineTokens,pointer,token) {
             set $ListBuild(lang, type, fragment) = token
             set newLineTokens = newLineTokens _ $ListBuild(token)
+            if 'isJSON {
+                set oneDimArray = 1
+            }
 
             #; Handle special rules for line breaks/removing white space
             #; for JSON brackets and delimiters. 
@@ -611,6 +614,8 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
                             set newLineTokens = ""
                         }
                     }
+                } elseif (fragment = "]") {
+                    do $i(isJSON,-1)
                 }
             } elseif type '= "White Space"{
                 set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
