@@ -512,8 +512,6 @@ Method TestJSONLinting()
 	set referenceClassItemName = "TestPackage.JSONBracketMatching.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
-	// Run CodeTidy with resequencing enabled
-	set ^Config("CodeTidy", "resequence") = 1
 	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
 	
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
@@ -536,8 +534,6 @@ Method TestJSONLinting()
 	set referenceClassItemName = "TestPackage.JSONBracketOneLine.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
-	// Run CodeTidy with resequencing enabled
-	set ^Config("CodeTidy", "resequence") = 1
 	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
 	
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
@@ -560,8 +556,6 @@ Method TestJSONLinting()
 	set referenceClassItemName = "TestPackage.JSONIndent.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
-	// Run CodeTidy with resequencing enabled
-	set ^Config("CodeTidy", "resequence") = 1
 	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
 	
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
@@ -584,8 +578,6 @@ Method TestJSONLinting()
 	set referenceClassItemName = "TestPackage.JSONBracketMixed.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
-	// Run CodeTidy with resequencing enabled
-	set ^Config("CodeTidy", "resequence") = 1
 	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
 	
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
@@ -608,13 +600,86 @@ Method TestJSONLinting()
 	set referenceClassItemName = "TestPackage.JSONOneDimArray.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
-	// Run CodeTidy with resequencing enabled
-	set ^Config("CodeTidy", "resequence") = 1
 	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
 	
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
 
 	set resultClass = "TestPackage.JSONOneDimArray.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+}
+
+Method TestHTMLIndent()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.HTMLIndentTestClass.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.HTMLIndentTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+}
+
+Method TestJSIndent()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.JSIndentTestClass.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.JSIndentTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+}
+
+Method TestBlockComment()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.BlockCommentTestClass.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.BlockCommentTestClass.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
