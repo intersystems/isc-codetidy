@@ -607,7 +607,6 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 	// &javascript
 	if this("Type") = $$$COSJavascript {
 		set conv("Frag") = this("Frag")
-		if $zconvert(conv("Frag"), "L") = "js" set conv("Frag") = "javascript"
 		if ##class(pkg.isc.codetidy.Utils).GetUseCapitals() = 0 {
 			set conv("Frag") = $zconvert(conv("Frag"), "l")
 		} else {

@@ -864,16 +864,19 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         // Set custom marker for embedded block if used
         if $extract(LineText, 1, 11) = "&javascript" {
             set marker = $piece($piece(LineText, "&javascript", 2), "<", 1)
+        } elseif $extract(LineText, 1, 3) = "&js" {
+            set marker = $piece($piece(LineText, "&js", 2), "<", 1)
         } elseif $extract(LineText, 1, 5) = "&html" {
             set marker = $piece($piece(LineText, "&html", 2), "<", 1)
         } 
 
-        set openTags = 5
+        set openTags = 6
         set openTags(1) = "{"
         set openTags(2) = "("
         set openTags(3) = "&javascript" _ marker _ "<"
-        set openTags(4) = "&html" _ marker _ "<"
-        set openTags(5) = "/*"
+        set openTags(4) = "&js" _ marker _ "<"
+        set openTags(5) = "&html" _ marker _ "<"
+        set openTags(6) = "/*"
     
         // if previously in = indent and new command shows up decrease indent
         // also decrease indent for comments
@@ -900,7 +903,7 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
             if (+$get(Handle(openParNoMarker))) > 0 {
                 set closeCount = $length(LineText, closePar) - $length(LineText, openPar)
                 set Handle(openParNoMarker) = Handle(openParNoMarker) - closeCount
-                if ((openParNoMarker = "&html<") || (openParNoMarker = "&javascript<")) && (+$get(Handle(openParNoMarker)) = 0) {
+                if ((openParNoMarker = "&html<") || (openParNoMarker = "&javascript<") || (openParNoMarker = "&js<")) && (+$get(Handle(openParNoMarker)) = 0) {
                     set marker = ""
                 }
                 // set Handle(openTags(tagIndex)) = Handle(openPar)
@@ -1097,16 +1100,19 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         // Set custom marker for embedded block if used
         if $extract(LineText, 1, 11) = "&javascript" {
             set marker = $piece($piece(LineText, "&javascript", 2), "<", 1)
+        } elseif $extract(LineText, 1, 3) = "&js" {
+            set marker = $piece($piece(LineText, "&js", 2), "<", 1)
         } elseif $extract(LineText, 1, 5) = "&html" {
             set marker = $piece($piece(LineText, "&html", 2), "<", 1)
         }
 
-        set openTags = 5
+        set openTags = 6
         set openTags(1) = "{"
         set openTags(2) = "("
         set openTags(3) = "&javascript" _ marker _ "<"
-        set openTags(4) = "&html" _ marker _ "<"
-        set openTags(5) = "/*"
+        set openTags(4) = "&js" _ marker _ "<"
+        set openTags(5) = "&html" _ marker _ "<"
+        set openTags(6) = "/*"
         
         // Check for = or _ at the end of the line and indent next line
         set lastChar = $extract(LineText, $length(LineText))

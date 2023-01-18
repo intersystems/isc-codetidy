@@ -83,5 +83,28 @@ Method JavaScriptMarker()
     >321
 }
 
+Method JavaScriptAbbrev()
+{
+    if 1 {
+        &js<
+            function foo(bar)
+            {
+                return true
+            }
+
+
+        >
+    }
+
+    &jsabc<
+        function foo(bar)
+        {
+            if (6 > 5) {
+                return True
+            }
+        }
+    >cba
+}
+
 }
 
