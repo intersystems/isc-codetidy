@@ -299,10 +299,12 @@ ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 		
 		if ..#DEBUG, $increment(%debug) < 1000 write this("Indent"), ":", next("Indent"), ":", multiLineCommand, ":", conv("Line"), !
 		
-		if ($extract(conv("Line")) = ##class(pkg.isc.codetidy.Utils).GetIndentString()) {
+		set indentString = ##class(pkg.isc.codetidy.Utils).GetIndentString()
+		set indented = ($extract(conv("Line"), 1, $length(indentString)) = indentString)
+		if (indented) && (last("Lang") '= "HTML") {
 			// Indentation
-			set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetIndentString() _ $translate($justify("", this("Indent") + multiLineCommand), $char(32), $char(9))
-			set conv("Line") = conv("Frag") _ $extract(conv("Line"), 2, *)
+			set conv("Frag") = indentString _ $replace($justify("", this("Indent") + multiLineCommand), $char(32), indentString)
+			set conv("Line") = conv("Frag") _ $extract(conv("Line"), 1+$length(indentString), *)
 		} else {
 			// Ignore indentation for ObjectScript line labels
 			// NOTE: Reference last language as "this" is the new line with no language.
@@ -335,6 +337,9 @@ ClassMethod InsertFragment(ByRef last, ByRef this)
 
 ClassMethod ReadFragment(ByRef last, ByRef this, ByRef next)
 {
+	set thisIsWhiteSpace = 0
+	set nextIsWhiteSpace = 0
+
 	set last("Lang") = this("Lang")
 	set last("Type") = this("Type")
 	set last("Frag") = this("Frag")
@@ -347,14 +352,36 @@ ClassMethod ReadFragment(ByRef last, ByRef this, ByRef next)
 	set this("Lang") = next("Lang")
 	set this("Type") = next("Type")
 	set this("Frag") = next("Frag")
+
+	// Prevent auto-indentation of embedded HTML
+	if (this("Type") = $$$HTMLWhiteSpace) && (this("Lang") = "HTML") {
+		set this("Type") = $$$HTMLText
+	}
 	
 	if 'this("SyntaxStream").AtEnd {
-		set nextLine = this("SyntaxStream").ReadLine()
-		set next("Lang") = $piece(nextLine, ",", 1)
-		set next("Type") = $piece(nextLine, ",", 2)
-		set next("Frag") = $piece(nextLine, ",", 3, *)
+		// Get next code fragment, combining white space characters
+		set mixedIndent = 1
+		while mixedIndent {
+			set nextLine = this("SyntaxStream").ReadLine()
+			set next("Lang") = $piece(nextLine, ",", 1)
+			set next("Type") = $piece(nextLine, ",", 2)
+			set next("Frag") = $piece(nextLine, ",", 3, *)
+
+			// Checks if "next" is a different white space character than "this" and combines
+			set thisIsWhiteSpace = ($extract(this("Frag")) = $c(9)) || ($extract(this("Frag")) = $c(32))
+			set nextIsWhiteSpace = ($extract(next("Frag")) = $c(9)) || ($extract(next("Frag")) = $c(32))
+			set mixedIndent = (thisIsWhiteSpace) && (nextIsWhiteSpace)
+			if mixedIndent {
+				set this("Frag") = this("Frag") _ next("Frag")
+			}
+		}
 	} else {
 		set this("AtEnd") = 1
+	}
+
+	// Resume auto-indentation at close of embedded block
+	if (($extract(this("Frag")) = $c(32)) || ($extract(this("Frag")) = $c(9))) && (next("Lang") [ "COS") && (next("Frag") = ">") {
+		set this("Type") = $$$HTMLWhiteSpace
 	}
 	
 	if ..#DEBUG, $data(nextLine) write nextLine, !
@@ -364,7 +391,7 @@ ClassMethod ParseFragment(ByRef last, ByRef this, ByRef next, ByRef conv)
 {
 	// Indentation
 	if $case(this("Lang"),
-		"COS":$case(this("Type"), $$$COSWhiteSpace:1, $$$COSComment:1, :0),
+		"COS":$case(this("Type"), $$$COSWhiteSpace:1, :0),
 		"CSS":$case(this("Type"), $$$CSSWhiteSpace:1, $$$CSSCstyleComment:1, :0),
 		"HTML":$case(this("Type"), $$$HTMLWhiteSpace:1, $$$HTMLComment:1, :0),
 		"JAVASCRIPT":$case(this("Type"), $$$JAVASCRIPTWhiteSpace:1, $$$JAVASCRIPTComment:1, :0),
@@ -580,7 +607,6 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 	// &javascript
 	if this("Type") = $$$COSJavascript {
 		set conv("Frag") = this("Frag")
-		if $zconvert(conv("Frag"), "L") = "js" set conv("Frag") = "javascript"
 		if ##class(pkg.isc.codetidy.Utils).GetUseCapitals() = 0 {
 			set conv("Frag") = $zconvert(conv("Frag"), "l")
 		} else {
