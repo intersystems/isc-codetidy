@@ -649,10 +649,12 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
         set lineTokens = tokens(line)
 
         #; Disregard lines within embedded HTML, JavaScript, or comments
-        set $ListBuild(firstLang, firstType, firstFragment) = $ListGet(lineTokens, 1)
-        if (firstLang '= "COS") || (firstType = "Comment") {
-            set newTokens($i(newTokens)) = lineTokens
-            continue
+        if lineTokens '= "" {
+            set $ListBuild(firstLang, firstType, firstFragment) = $ListGet(lineTokens, 1)
+            if (firstLang '= "COS") || (firstType = "Comment") {
+                set newTokens($i(newTokens)) = lineTokens
+                continue
+            }
         }
 
         set pointer = 0
