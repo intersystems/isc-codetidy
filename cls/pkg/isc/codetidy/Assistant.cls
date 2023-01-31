@@ -294,7 +294,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
                 if (method.Language = $$$langObjectScript) || (method.Language = "") {
                     kill tokens
                     $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetMethodImplementation(classDef.Name, method.Name, .tmpTokens, $namespace))
-                    do ..JSONLint(.tmpTokens,method.Implementation,.tokens)
+                    do ..JSONLint(.tmpTokens,method.Implementation,0,.tokens)
                     do method.Implementation.Rewind()
                 }
 
@@ -344,9 +344,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
                         set lineNumber = $increment(lineNumber)
                     }
 
-                    if '$Get(handle("&html<")) {
-                        do ..IndentCodeLine(.handle, $case(method.Language, "":$$$langObjectScript, :method.Language), .lineText, .indent, command, isJSON, .marker)
-                    }
+                    do ..IndentCodeLine(.handle, $case(method.Language, "":$$$langObjectScript, :method.Language), .lineText, .indent, command, isJSON, .marker)
                     if 'method.Implementation.AtEnd {
                         do code.WriteLine(lineText)
                     } else {
@@ -428,7 +426,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
             if (language = $$$langObjectScript) || (language = "") {
                 kill tokens
                 $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetRoutineImplementation(InternalName, .tokens, $namespace))
-                do ..JSONLint(.tokens,routineDef.Code,.newTokens)
+                do ..JSONLint(.tokens,routineDef.Code,1,.newTokens)
                 do routineDef.Code.Rewind()
             }
 
@@ -477,9 +475,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
                     set lineNumber = $increment(lineNumber)
                 }
                 
-                if '$Get(Handle("&html<")) {
-                    do ..IndentCodeLine(.handle, language, .lineText, .indent, command, isJSON, .marker)
-                }
+                do ..IndentCodeLine(.handle, language, .lineText, .indent, command, isJSON, .marker)
                 if 'routineDef.Code.AtEnd {
                     do code.WriteLine(lineText)
                 } else {
@@ -557,7 +553,7 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
     quit status
 }
 
-ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTokens)
+ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As %Boolean, Output newTokens)
 {
     kill newTokens
     set isJSON = 0
@@ -587,26 +583,37 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
             #; Additionally, if next line starts with { or }, enforce line break
             if (lang = "COS") && (type = "JSON bracket") {
                 if (fragment = "{") {
+                    if oneDimArray do $i(isJSON)
                     set pointerCopy = pointer
                     if $listnext(lineTokens,pointerCopy,dummy) {
                         set newTokens($i(newTokens)) = newLineTokens
                         set newLineTokens = ""
                     }
                 } elseif (fragment = "}") {
+                    if (oneDimArray) && (isJSON) {
+                        do $i(isJSON,-1)
+                        if 'isJSON set oneDimArray = 0
+                    }
                     set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
                     set $ListBuild(nextLang, nextType, nextFragment) = nextToken
                     if ((nextToken '= "") && ((nextFragment = "]") || (nextFragment = ","))) {
-                        do $i(isJSON,-1*((nextFragment = "]")))
+                        do $i(isJSON,-2*((nextFragment = "]")))
                         set newLineTokens = newLineTokens _ $ListBuild(nextToken)
                         set line = nextLine
                         set lineTokens = nextLineTokens
                         set pointer = nextPointer
+                        set pointerCopy = pointer
+                        if (('isJSON) && ($listnext(lineTokens,pointerCopy,dummy))) || (nextFragment = ",") {
+                            set newTokens($i(newTokens)) = newLineTokens
+                            set newLineTokens = ""
+                        }
+                    } elseif $Get(nextFragment) = "}" {
                         set newTokens($i(newTokens)) = newLineTokens
                         set newLineTokens = ""
                     }
                 } elseif (fragment = "[") {
                     set oneDimArray = 0
-                    do $i(isJSON)
+                    do $i(isJSON,2)
                     set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
                     if nextToken = $ListBuild("COS","JSON bracket","{") {
                         set newLineTokens = newLineTokens _ $ListBuild(nextToken)
@@ -620,30 +627,35 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
                         }
                     }
                 } elseif (fragment = "]") {
-                    do $i(isJSON,-1)
+                    do $i(isJSON,-2)
                 }
-            } elseif type '= "White Space"{
+            } elseif (type '= "White Space") && (fragment '= ":"){
                 set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
                 set pointerCopy = pointer
-                if (($listnext(lineTokens, pointerCopy, dummy)) && ((nextToken = $ListBuild("COS","JSON bracket","}"))||(('oneDimArray)&&(nextToken = $ListBuild("COS","JSON bracket","{"))))) {
+                if (($listnext(lineTokens, pointerCopy, dummy)) 
+                    && ((nextToken = $ListBuild("COS","JSON bracket","}"))
+                        ||(('oneDimArray)
+                            &&(nextToken = $ListBuild("COS","JSON bracket","{"))))) {
                     set newTokens($i(newTokens)) = newLineTokens
                     set newLineTokens = ""
                 }
             }
         }
-        if ((newLineTokens '= "") || (isJSON = 0)) {
+        if ((newLineTokens '= "") || ('isJSON)) {
             set newTokens($i(newTokens)) = newLineTokens
         }
         
     }
 
-    #; Horizontal Spacing for JSON Arrays
+    // Horizontal Spacing for JSON Arrays
     kill tokens
     merge tokens = newTokens
     kill newTokens
     kill newLineTokens
-    set indents = 1
+    set indents = 'isRoutine
     set isJSON = 0
+    set layerJSON = 0
+    set oneDimArray = 1
 
     for line=1:1:$Get(tokens,0) {
         set lineTokens = tokens(line)
@@ -651,7 +663,7 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
         #; Disregard lines within embedded HTML, JavaScript, or comments
         if lineTokens '= "" {
             set $ListBuild(firstLang, firstType, firstFragment) = $ListGet(lineTokens, 1)
-            if (firstLang '= "COS") || (firstType = "Comment") {
+            if (firstLang '= "COS") || (firstType = "Comment") || (firstType = "Label") {
                 set newTokens($i(newTokens)) = lineTokens
                 continue
             }
@@ -668,24 +680,29 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, Output newTok
             #; to exit the array and then be outside JSON
             if token = $ListBuild("COS","JSON bracket","[") {
                 do $i(isJSON)
+                do $i(layerJSON)
+                set oneDimArray = 0
             } elseif token = $ListBuild("COS","JSON bracket","]") {
                 do $i(isJSON,-1)
+                do $i(layerJSON,-1)
+                if 'layerJSON set oneDimArray = 1
             }
 
             #; Detect one dimensional array as special case
             if (token = $ListBuild("COS", "JSON bracket", "{")) && ('isJSON) {
                 set isJSON = 1
             }
-            if (token = $ListBuild("COS", "JSON bracket", "}")) && ('isJSON) {
+            if (token = $ListBuild("COS", "JSON bracket", "}")) && (oneDimArray) && (isJSON) {
                 set isJSON = 0
+                set decIndent = 1
             }
 
             #; Determine whether the next line should be indented by 1
             #; or if current line should be unindented by 1
             if isJSON {
-                if (fragment = "{" || fragment = "[") {
+                if (fragment = "{") || (fragment = "[") {
                     set incIndent = 1
-                } elseif (fragment = "}" || fragment = "]") {
+                } elseif (fragment = "}") || (fragment = "]") {
                     set decIndent = 1
                 }
                 if type '= "White Space" {
@@ -767,12 +784,13 @@ ClassMethod IndentCodeLine(ByRef Handle As %Library.Binary, Language As %String,
     
     #; Remove leading space.
     set originalText = LineText
+    set originalIndent = Indent
     
     set LineText = $zstrip(LineText,"<W")
     set LineText = $zstrip(LineText,">W")
     
     #; Check whether this line should be moved out.
-    set decIndent = ..DecIndent(.Handle, (LineText), Language, Command, IsJSON, .marker)
+    set decIndent = ..DecIndent(.Handle, (LineText), Language, Command, IsJSON, .marker, .deleteMarker)
     
     set Indent = Indent - decIndent
     if Indent < 0 set Indent = 0
@@ -791,6 +809,7 @@ ClassMethod IndentCodeLine(ByRef Handle As %Library.Binary, Language As %String,
         if (Language = $$$langObjectScript) || (Language = "") {
             // Preserve user indentation of comment blocks
             if $get(Handle("/*")) || ($extract(LineText, $length(LineText) - 1, *) = "*/") {
+                /*
                 set numTabs = 0
                 while $extract(originalText, numTabs*indentLength + 1, numTabs*indentLength + indentLength) = indentChar {
                     set numTabs = $increment(numTabs)
@@ -800,18 +819,29 @@ ClassMethod IndentCodeLine(ByRef Handle As %Library.Binary, Language As %String,
                 } else {
                     set Indent = numTabs + +$get(Handle("IndentComment"))
                 }
+                */
             }
             // Forget indentation offset for multiline comments
             if $get(Handle("IndentComment")) && '$get(Handle("/*")) {
                 kill Handle("IndentComment")
             }
         }
+        
+        // Check for special case of block comments or embedded html where we preserve user indentation
+        set preserveIndent = (($get(Handle("&html<"))) || ($get(Handle("/*")))
+                            || ($extract(LineText, $length(LineText) - $length(marker) - 1, *) = (">"_$reverse(marker)))
+                            || ($extract(LineText, $length(LineText) - 1, *) = "*/"))
 
-        #; Return new line.
-        for count = 1:1:(Indent+$get(Handle("post-decrement"))) {
-            set formatLine = indentChar_formatLine
+        // Return new line.
+        if preserveIndent {
+            set formatLine = originalText
+        } else {
+            for count = 1:1:(Indent+$get(Handle("post-decrement"))) {
+                set formatLine = indentChar_formatLine
+            }
         }
         set LineText = formatLine
+        if deleteMarker set marker = ""
 
         // Set indent for next line
         set Indent = Indent + incIndent
@@ -823,12 +853,13 @@ ClassMethod IndentCodeLine(ByRef Handle As %Library.Binary, Language As %String,
 
 /// Temporarily putting this method here
 /// it is a rewrite from the basic version to objectscript
-ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Language As %String, ObjectScriptCommand As %String, IsJSON As %Boolean, ByRef marker As %String = "") As %Integer
+ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Language As %String, ObjectScriptCommand As %String, IsJSON As %Boolean, ByRef marker As %String = "", ByRef deleteMarker As %Boolean) As %Integer
 {
     // Decrease Indent
     #dim endOfCommand as %Integer
     #dim command as %String
     set decIndent = 0
+    set deleteMarker = 0
 
     // Strip comments
     set LineText = ..StripCode(LineText, Language)
@@ -891,6 +922,9 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
 
         for tagIndex = 1:1:openTags {
             set openPar = openTags(tagIndex)
+            if (openPar '= "/*") && ($Get(Handle("/*"))) {
+                continue
+            }
             set closePar = $case(
                 openPar,
                 "{": "}",
@@ -903,10 +937,14 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
             // check for block statements
             set openParNoMarker = $replace(openPar, marker, "")
             if (+$get(Handle(openParNoMarker))) > 0 {
-                set closeCount = $length(LineText, closePar) - $length(LineText, openPar)
+                if openPar = "/*"{
+                    set closeCount = $length(LineText, closePar) - $length(LineText, marker _ $extract(openPar, $length(marker)+1, $length(openPar)))
+                } else {
+                    set closeCount = $length(LineText, closePar) - $length(LineText, marker _ $extract(openPar, $length(openPar)))
+                }
                 set Handle(openParNoMarker) = Handle(openParNoMarker) - closeCount
                 if ((openParNoMarker = "&html<") || (openParNoMarker = "&javascript<") || (openParNoMarker = "&js<")) && (+$get(Handle(openParNoMarker)) = 0) {
-                    set marker = ""
+                    set deleteMarker = 1
                 }
                 // set Handle(openTags(tagIndex)) = Handle(openPar)
                 if closeCount > 0 {
@@ -1127,6 +1165,9 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         set LineText = $zconvert(LineText, "l")
         for tagIndex = 1:1:openTags {
             set openPar = openTags(tagIndex)
+            if (openPar '= "/*") && ($Get(Handle("/*"))){
+                continue
+            }
             set closePar = $case(
                 openPar,
                 "{": "}",
@@ -1140,9 +1181,11 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
             set openParNoMarker = $replace(openPar, marker, "")
             set openCount = $length(LineText, openPar) - $length(LineText, closePar)
             if openCount > 0 {
-                set Handle(openParNoMarker) = $get(Handle(openParNoMarker)) + openCount
                 if openPar '= "/*" {
+                    set Handle(openParNoMarker) = $get(Handle(openParNoMarker)) + openCount
                     set incIndent = incIndent + openCount
+                } else {
+                    set Handle(openPar) = 1
                 }
             } elseif openCount = 0 {
                 // Increment the indent for the next line if this line uses an open bracket/parenthesis last.

@@ -3,7 +3,7 @@ Class TestPackage.BlockCommentTestClass
 
 Method BlockCommentTest()
 {
-    /*
+        /*
         Do not change
             my indentation
         even if inconsistent
@@ -23,6 +23,23 @@ Method BlockCommentTest()
     or misaligned closings
                     within the block
         */
+
+    if 1 {
+		/*
+			    Or if inside a conditional
+        block with inconsistent indentation
+		*/
+	    }
+
+    /* And do not negatively affect
+        indentation of code even if blocks
+        are opened and not closed
+        set commentArray = {
+            "a":[{
+    */
+    set testArray = [{
+            "foo":"bar"
+    }]
 }
 
 }
