@@ -21,8 +21,9 @@ Please read [contributing](https://github.com/intersystems/isc-codetidy/blob/mai
 We use [SemVer](http://semver.org/) for versioning. Declare your dependencies using the InterSystems package manager for the appropriate level of risk.
 
 ## Authors
-* **Sarmishta Velury** - [isc-svelury](http://github.com/isc-svelury)
+* **Evan Gabhart** - [isc-egabhart](http://github.com/isc-egabhart)
 * **Tim Leavitt** - [isc-tleavitt](http://github.com/isc-tleavitt)
+* **Sarmishta Velury** - [isc-svelury](http://github.com/isc-svelury)
 * InterSystems TrakCare Development
 
 See also the list of [contributors](https://github.com/intersystems/isc-codetidy/graphs/contributors) who participated in this project.
