@@ -807,20 +807,7 @@ ClassMethod IndentCodeLine(ByRef Handle As %Library.Binary, Language As %String,
 
         // Preserve indentation of /**/ comments
         if (Language = $$$langObjectScript) || (Language = "") {
-            // Preserve user indentation of comment blocks
-            if $get(Handle("/*")) || ($extract(LineText, $length(LineText) - 1, *) = "*/") {
-                /*
-                set numTabs = 0
-                while $extract(originalText, numTabs*indentLength + 1, numTabs*indentLength + indentLength) = indentChar {
-                    set numTabs = $increment(numTabs)
-                }
-                if '$data(Handle("IndentComment")) {
-                    set Handle("IndentComment") = Indent - numTabs
-                } else {
-                    set Indent = numTabs + +$get(Handle("IndentComment"))
-                }
-                */
-            }
+            
             // Forget indentation offset for multiline comments
             if $get(Handle("IndentComment")) && '$get(Handle("/*")) {
                 kill Handle("IndentComment")
