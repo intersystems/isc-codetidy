@@ -162,6 +162,7 @@ ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "
 
 	// Each line of syntax stream is broken down into Language, Type, and Fragment.
 	// We will keep track of the last, current (this) and next values.
+	set (first("Lang"), first("Type"), first("Frag")) = ""
 	set (last("Lang"), last("Type"), last("Frag")) = ""
 	set (last("NonSpaceLang"), last("NonSpaceType"), last("NonSpaceFrag")) = ""
 	set (this("Lang"), this("Type"), this("Frag")) = ""
@@ -193,7 +194,8 @@ ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "
 			
 			if newLineCount > 3 continue
 			
-			do ..ParseLine(.last, .this, .next, .conv)
+			do ..ParseLine(.last, .this, .next, .conv, .first)
+			set (first("Lang"), first("Type"), first("Frag")) = ""
 			continue
 			
 		} else {
@@ -201,7 +203,7 @@ ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "
 			set newLineCount = 0
 		}
 		
-		do ..ParseFragment(.last, .this, .next, .conv)
+		do ..ParseFragment(.last, .this, .next, .conv, .first)
 	}
 
 	if lang = "SQL" {
@@ -264,7 +266,7 @@ ClassMethod ProgressLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 	quit
 }
 
-ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv)
+ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv, ByRef first)
 {
 	if ##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() {
 		// Exclude existing execution plan as comment.
@@ -301,7 +303,7 @@ ClassMethod ParseLine(ByRef last, ByRef this, ByRef next, ByRef conv)
 		
 		set indentString = ##class(pkg.isc.codetidy.Utils).GetIndentString()
 		set indented = ($extract(conv("Line"), 1, $length(indentString)) = indentString)
-		if (indented) && (last("Lang") '= "HTML") {
+		if (indented) && (last("Lang") '= "HTML") && ($Get(first("Type")) '= $$$COSComment) {
 			// Indentation
 			set conv("Frag") = indentString _ $replace($justify("", this("Indent") + multiLineCommand), $char(32), indentString)
 			set conv("Line") = conv("Frag") _ $extract(conv("Line"), 1+$length(indentString), *)
@@ -387,8 +389,14 @@ ClassMethod ReadFragment(ByRef last, ByRef this, ByRef next)
 	if ..#DEBUG, $data(nextLine) write nextLine, !
 }
 
-ClassMethod ParseFragment(ByRef last, ByRef this, ByRef next, ByRef conv)
+ClassMethod ParseFragment(ByRef last, ByRef this, ByRef next, ByRef conv, ByRef first)
 {
+	if conv("Line") = "" {
+		set first("Lang") = this("Lang")
+		set first("Type") = this("Type")
+		set first("Frag") = this("Frag")
+	}
+
 	// Indentation
 	if $case(this("Lang"),
 		"COS":$case(this("Type"), $$$COSWhiteSpace:1, :0),
@@ -740,10 +748,10 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 			}
 			
 			if (next("Lang") '= "\n")
-			&& (next("Frag") '= "else")
-			&& (next("Frag") '= "elseif")
-			&& (next("Frag") '= "catch")
-			&& (next("Frag") '= "while") {
+			&& ($zconvert(next("Frag"), "L") '= "else")
+			&& ($zconvert(next("Frag"), "L") '= "elseif")
+			&& ($zconvert(next("Frag"), "L") '= "catch")
+			&& ($zconvert(next("Frag"), "L") '= "while") {
 				// Insert new line and opening whitespace
 				set this("Lang") = "\n"
 				set this("Type") = ""

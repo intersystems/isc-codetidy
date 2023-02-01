@@ -615,4 +615,3 @@ ClassMethod GetESLintConfig() As %String
 }
 
 }
-

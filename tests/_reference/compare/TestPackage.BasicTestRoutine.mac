@@ -1,0 +1,6 @@
+ROUTINE TestPackage.BasicTestRoutine
+test() {
+    if 1 {
+        set foo = "bar"
+    }
+}

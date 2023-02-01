@@ -617,6 +617,28 @@ Method TestJSONLinting()
 	if ..deleteFiles {
 		do ##class(%Library.File).Delete(exportFile)
 	}
+
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.JSONNested.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.JSONNested.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
 }
 
 Method TestHTMLIndent()
@@ -655,6 +677,31 @@ Method TestJSIndent()
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
 
 	set resultClass = "TestPackage.JSIndentTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+}
+
+Method TestRoutine()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.BasicTestRoutine.mac"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.BasicTestRoutine.mac"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 

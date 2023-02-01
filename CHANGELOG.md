@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2023-01-31
+
+### Fixed
+- Fixed `<UNDEFINED>` error parsing empty method implementation
+- Fixed indentation of JSON arrays that have mappings to different dimension JSON arrays
+- Fixed outer indentation of subroutines within routines
+- Fixed CodeTidy indenting line labels in methods and routines
+- Fixed CodeTidy not exiting indentation rules of some arrays and block comments
+
 ## [1.1.2] - 2023-01-18
 
 ### Fixed
