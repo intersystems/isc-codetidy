@@ -741,6 +741,195 @@ Method TestBlockComment()
 	}
 }
 
+Method TestCapital()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.CapitalTestClass.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+
+	set oldConfig = $get(^Config("CodeTidy", "capital"))
+	set ^Config("CodeTidy", "capital") = 1
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set ^Config("CodeTidy", "capital") = oldConfig
+
+	set resultClass = "TestPackage.CapitalOnTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.CapitalTestClass.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+
+	set oldConfig = $get(^Config("CodeTidy", "capital"))
+	set ^Config("CodeTidy", "capital") = 0
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set ^Config("CodeTidy", "capital") = oldConfig
+
+	set resultClass = "TestPackage.CapitalOffTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+}
+
+Method TestUseMacroComment()
+{
+	set oldCommentStyle = $get(^Config("CodeTidy", "coscomment"))
+	set oldUseMacro = $get(^Config("CodeTidy", "usemacrocomments"))
+	set oldTweak = $get(^Config("CodeTidy", "tweak"))
+
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.MacroCommentTestClass.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+
+	set ^Config("CodeTidy", "tweak") = "auto"
+	set ^Config("CodeTidy", "usemacrocomments") = 0
+	set ^Config("CodeTidy", "coscomment") = "//"
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.MacroCommentOffSlashTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set ^Config("CodeTidy", "coscomment") = "#;"
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.MacroCommentOffMacroTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set ^Config("CodeTidy", "coscomment") = ";"
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.MacroCommentOffSemicolon.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set ^Config("CodeTidy", "usemacrocomments") = 1
+	set ^Config("CodeTidy", "coscomment") = "//"
+
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.MacroCommentOnSlashTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+	
+	set ^Config("CodeTidy", "coscomment") = "#;"
+
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.MacroCommentOnMacroTestClass.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set ^Config("CodeTidy", "coscomment") = ";"
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.MacroCommentOnSemicolon.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set ^Config("CodeTidy", "tweak") = oldTweak
+	set ^Config("CodeTidy", "usemacrocomments") = oldUseMacro
+	set ^Config("CodeTidy", "coscomment") = oldCommentStyle
+}
+
 Method %OnClose() As %Status
 {
 	do ##class(%Studio.SourceControl.Interface).SourceControlClassSet(..userSourceControl)

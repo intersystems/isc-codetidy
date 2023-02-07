@@ -262,7 +262,7 @@ ClassMethod ParseCode(InternalName As %String, Label As %String, inputCode As %C
 			
 			#; // or ; comments -> macro comments #;
 			if ##class(pkg.isc.codetidy.Utils).GetUseMacroComments() {
-				if $extract(strippedText) = ";" {
+				if ($extract(strippedText) = ";") && ($extract(strippedText, 2) '= ";") {
 					set msgType("PERF")=""
 					set msgText = msgText_$listbuild("Macro comments improve performance")
 					#; Get the index of the character after the semi-colon.
@@ -367,4 +367,3 @@ ClassMethod FileType(InternalName As %String) As %String [ Private ]
 }
 
 }
-
