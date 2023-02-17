@@ -810,11 +810,11 @@ ClassMethod ParseFragmentCOSComment(ByRef last, ByRef this, ByRef next, ByRef co
 		// Convert single line comment style
 		// Leave the double semi-colon as this acts differently to other styles.
 		// Double semi-colon retains the comment in depolyed output.
-		if $extract(this("Frag"), 1) = ";", $extract(this("Frag"), 1, 2) '= ";;" set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ $extract(conv("Frag"), 2, *)
-		if $extract(this("Frag"), 1, 2) = "#;" set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ $extract(conv("Frag"), 3, *)
-		if $extract(this("Frag"), 1, 3) = "##;" set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ $extract(conv("Frag"), 4, *)
+		if $extract(this("Frag"), 1) = ";", $extract(this("Frag"), 1, 2) '= ";;" set conv("Frag") = cosComment _ $extract(conv("Frag"), 2, *)
+		if $extract(this("Frag"), 1, 2) = "#;" set conv("Frag") = cosComment _ $extract(conv("Frag"), 3, *)
+		if $extract(this("Frag"), 1, 3) = "##;" set conv("Frag") = cosComment _ $extract(conv("Frag"), 4, *)
 		if ##class(pkg.isc.codetidy.Utils).GetObjectScriptWhiteSpace() {
-			if $extract(conv("Frag"), 1, 2) = "//", $extract(conv("Frag"), 3) '= " " set conv("Frag") = ##class(pkg.isc.codetidy.Utils).GetCommentStyle() _ " " _ $extract(conv("Frag"), 3, *)
+			if $extract(conv("Frag"), 1, 2) = "//", $extract(conv("Frag"), 3) '= " " set conv("Frag") = cosComment _ " " _ $extract(conv("Frag"), 3, *)
 		}
 	}
 }
