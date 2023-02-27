@@ -563,6 +563,10 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
 
     #; Vertical Spacing for JSON Array
     for line=1:1:$Get(tokens,0) {
+        #; For checking if within Macro statement
+        set isMacro = 0
+        set macroParen = 0
+
         set lineTokens = tokens(line)
         set pointer = 0
         set newLineTokens = ""
@@ -572,6 +576,24 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
             if 'isJSON {
                 set oneDimArray = 1
             }
+
+            #; Special case, do nothing if in Macro
+            if type = "Macro" {
+                set isMacro = 1
+            }
+
+            if isMacro {
+                if fragment = ")" {
+                    do $i(macroParen,-1)
+                    if 'macroParen {
+                        set isMacro = 0
+                    }
+                } elseif fragment = "(" {
+                    do $i(macroParen)
+                }
+                if macroParen continue
+            }
+            
 
             #; Handle special rules for line breaks/removing white space
             #; for JSON brackets and delimiters. 
@@ -585,7 +607,17 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                 if (fragment = "{") {
                     if oneDimArray do $i(isJSON)
                     set pointerCopy = pointer
-                    if $listnext(lineTokens,pointerCopy,dummy) {
+                    set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
+                    set $ListBuild(nextLang, nextType, nextFragment) = nextToken
+                    if nextFragment = "}" {
+                        set newLineTokens = newLineTokens _ $ListBuild(nextToken)
+                        set pointer = nextPointer
+                        set line = nextLine
+                        set lineTokens = nextLineTokens
+                        set token = nextToken
+                        do $i(isJSON,-1)
+                        if 'isJSON set oneDimArray = 0
+                    } elseif $listnext(lineTokens,pointerCopy,dummy) {
                         set newTokens($i(newTokens)) = newLineTokens
                         set newLineTokens = ""
                     }
@@ -625,6 +657,13 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                             set newTokens($i(newTokens)) = newLineTokens
                             set newLineTokens = ""
                         }
+                    } elseif nextToken = $ListBuild("COS","JSON bracket","]") {
+                        set newLineTokens = newLineTokens _ $ListBuild(nextToken)
+                        set line = nextLine
+                        set lineTokens = nextLineTokens
+                        set pointer = nextPointer
+                        set pointerCopy = pointer
+                        do $i(isJSON,-2)
                     }
                 } elseif (fragment = "]") {
                     do $i(isJSON,-2)

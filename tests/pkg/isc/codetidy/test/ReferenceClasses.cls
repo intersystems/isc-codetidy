@@ -530,7 +530,6 @@ Method TestJSONLinting()
 		do ##class(%Library.File).Delete(exportFile)
 	}
 
-	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
 	set referenceClassItemName = "TestPackage.JSONBracketOneLine.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
@@ -552,7 +551,6 @@ Method TestJSONLinting()
 		do ##class(%Library.File).Delete(exportFile)
 	}
 
-	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
 	set referenceClassItemName = "TestPackage.JSONIndent.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
@@ -574,7 +572,6 @@ Method TestJSONLinting()
 		do ##class(%Library.File).Delete(exportFile)
 	}
 
-	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
 	set referenceClassItemName = "TestPackage.JSONBracketMixed.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
@@ -596,7 +593,6 @@ Method TestJSONLinting()
 		do ##class(%Library.File).Delete(exportFile)
 	}
 
-	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
 	set referenceClassItemName = "TestPackage.JSONOneDimArray.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
@@ -618,7 +614,6 @@ Method TestJSONLinting()
 		do ##class(%Library.File).Delete(exportFile)
 	}
 
-	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
 	set referenceClassItemName = "TestPackage.JSONNested.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
 	
@@ -627,6 +622,48 @@ Method TestJSONLinting()
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
 
 	set resultClass = "TestPackage.JSONNested.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set referenceClassItemName = "TestPackage.JSONEmptyArray.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.JSONEmptyArray.cls"
+	set truthFile = referenceRoot _ "after/" _ resultClass
+	set exportFile = referenceRoot _ "compare/" _ resultClass
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	// Note: this appends an extra newline at the end. "after" files need this.
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	set referenceClassItemName = "TestPackage.JSONInMacro.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+	
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set resultClass = "TestPackage.JSONInMacro.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
