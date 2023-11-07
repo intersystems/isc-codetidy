@@ -6,7 +6,7 @@ Note: a minimum platform version of InterSystems IRIS 2018.1 is required.
 
 ### Installation: ZPM
 
-If you already have the [ObjectScript Package Manager](https://openexchange.intersystems.com/package/ObjectScript-Package-Manager-2), installation is as easy as:
+If you already have the [ObjectScript Package Manager](https://openexchange.intersystems.com/package/InterSystems-Package-Manager-1), installation is as easy as:
 ```
 zpm "install isc.codetidy"
 ```
