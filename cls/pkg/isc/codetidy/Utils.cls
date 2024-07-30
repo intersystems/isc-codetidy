@@ -159,30 +159,32 @@ ClassMethod RunAll(pOnlyIfInSourceControl As %Boolean = 1) As %Status
 
 		// Run all .js files
 		// Build the spec for StudioOpenDialog
-		set spec = ""
-		set codeNamespace = $namespace
-		set $namespace = "%SYS"
-		set result = ##class(%SQL.Statement).%ExecDirect(,"select * from Security.Applications where NameSpace = ?", codeNamespace)
-		while result.%Next() {
-			// Exclude anything from the itemsetsourcelink web application
-			if result.ID '= "/itemsetsourcelink" {
-				set entry = $extract(result.ID, 2, *)_"/*.js"
-				if spec = "" {
-					set spec = entry
-				} else {
-					set spec = spec_","_entry
+		if ..GetESLintEnabled() {
+			set spec = ""
+			set codeNamespace = $namespace
+			set $namespace = "%SYS"
+			set result = ##class(%SQL.Statement).%ExecDirect(,"select * from Security.Applications where NameSpace = ?", codeNamespace)
+			while result.%Next() {
+				// Exclude anything from the itemsetsourcelink web application
+				if $Extract(result.ID, 1, 18) '= "/itemsetsourcelink" {
+					set entry = $extract(result.ID, 2, *)_"/*.js"
+					if spec = "" {
+						set spec = entry
+					} else {
+						set spec = spec_","_entry
+					}
 				}
 			}
-		}
-		set $namespace = codeNamespace
+			set $namespace = codeNamespace
 
-		// Run StudioOpenDialog to get the .js files
-		set resultSet = ##class(%Library.ResultSet).%New("%RoutineMgr:StudioOpenDialog")
-		$$$ThrowOnError(resultSet.Prepare())
-		$$$ThrowOnError(resultSet.Execute(spec, 1, 1, 0, 1, 0, 0, ""))
-		while resultSet.Next() {
-			set name = resultSet.Data("Name")
-			$$$ThrowOnError(##class(pkg.isc.codetidy.Utils).Run(name, pOnlyIfInSourceControl))
+			// Run StudioOpenDialog to get the .js files
+			set resultSet = ##class(%Library.ResultSet).%New("%RoutineMgr:StudioOpenDialog")
+			$$$ThrowOnError(resultSet.Prepare())
+			$$$ThrowOnError(resultSet.Execute(spec, 1, 1, 0, 1, 0, 0, ""))
+			while resultSet.Next() {
+				set name = resultSet.Data("Name")
+				$$$ThrowOnError(##class(pkg.isc.codetidy.Utils).Run(name, pOnlyIfInSourceControl))
+			}
 		}
 	} catch e {
 		set sc = e.AsStatus()
