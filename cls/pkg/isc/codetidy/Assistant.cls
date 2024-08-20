@@ -296,6 +296,9 @@ ClassMethod IndentDocument(InternalName As %String) As %Status
                     $$$ThrowOnError(##class(pkg.isc.codetidy.vartyping.ObjectScriptTokenizer).GetMethodImplementation(classDef.Name, method.Name, .tmpTokens, $namespace))
                     do ..JSONLint(.tmpTokens,method.Implementation,0,.tokens)
                     do method.Implementation.Rewind()
+                } elseif method.Language = "python" {
+                    // TODO Add embedded Python linting
+                    continue
                 }
 
                 #; Run through each line and build a new stream
