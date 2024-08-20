@@ -16,7 +16,7 @@ ClassMethod ResequenceDocument(InternalName As %String, Export As %Boolean) As %
 		
 		if $isobject(class) {
 			#; Parameters
-			for list = class.Parameters, class.Properties, class.Indices, class.Methods, class.Queries, class.Triggers, class.Storages {
+			for list = class.Parameters, class.Properties, class.ForeignKeys, class.Indices, class.Methods, class.Queries, class.Triggers, class.Storages {
 				set key = ""
 				for {
 					set item = list.GetNext(.key)
@@ -39,12 +39,14 @@ ClassMethod ResequenceDocument(InternalName As %String, Export As %Boolean) As %
 						}
 					} elseif ($classname(item) = "%Dictionary.ParameterDefinition") || ($classname(item) = "%Dictionary.PropertyDefinition") {
 						set weight = 20
-					} elseif ($classname(item) = "%Dictionary.IndexDefinition") {
+					} elseif ($classname(item) = "%Dictionary.ForeignKeyDefinition") {
 						set weight = 30
-					} elseif ($classname(item) = "%Dictionary.MethodDefinition") || ($classname(item) = "%Dictionary.QueryDefinition") {
+					} elseif ($classname(item) = "%Dictionary.IndexDefinition") {
 						set weight = 40
-					} elseif ($classname(item) = "%Dictionary.TriggerDefinition") {
+					} elseif ($classname(item) = "%Dictionary.MethodDefinition") || ($classname(item) = "%Dictionary.QueryDefinition") {
 						set weight = 50
+					} elseif ($classname(item) = "%Dictionary.TriggerDefinition") {
+						set weight = 60
 					} else {
 						set weight = 99
 					}
