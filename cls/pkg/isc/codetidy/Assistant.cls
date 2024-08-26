@@ -673,7 +673,6 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                 }
             } elseif (type '= "White Space") && (fragment '= ":") {
                 set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
-                set nextType = $ListGet(nextToken, 2)
                 set pointerCopy = pointer
                 if (($listnext(lineTokens, pointerCopy, dummy)) 
                     && ((nextToken = $ListBuild("COS","JSON bracket","}"))
@@ -681,16 +680,12 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                             &&(nextToken = $ListBuild("COS","JSON bracket","{"))))) {
                     set newTokens($i(newTokens)) = newLineTokens
                     set newLineTokens = ""
-                } elseif (nextType = "Comment") && (type '= "Comment") {
-                    set spaceToken = $ListBuild("COS", "Comment", " ")
-                    set newLineTokens = newLineTokens _ $ListBuild(spaceToken)
                 }
             }
         }
         if ((newLineTokens '= "") || ('isJSON)) {
             set newTokens($i(newTokens)) = newLineTokens
         }
-        
     }
 
     // Horizontal Spacing for JSON Arrays
@@ -753,6 +748,12 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                 }
                 if type '= "White Space" {
                     set newLineTokens = newLineTokens _ $ListBuild(token)
+                } else {
+                    set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
+                    set nextType = $ListGet(nextToken, 2)
+                    if nextType = "Comment" {
+                        set newLineTokens = newLineTokens _ $ListBuild(token)
+                    }
                 }
             } else {
                 set newLineTokens = newLineTokens _ $ListBuild(token)
