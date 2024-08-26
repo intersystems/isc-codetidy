@@ -15,29 +15,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.7] - 2024-08-20
 
 ### Fixed
--Add Foreign Keys to class items to resequence (#51)
--Prevented auto-indentation of embedded Python lines until Python linting is implemented (#52)
+- Add Foreign Keys to class items to resequence (#51)
+- Prevented auto-indentation of embedded Python lines until Python linting is implemented (#52)
 
 ## [1.1.6] - 2024-07-29
 
 ### Fixed
--Fixed .js files in other namespaces' /itemsetsourcelink web app being editing during ##class(pkg.isc.codetidy.Utils).RunAll (#45)
--Fixed .js files being re-exported without edit during ##class(pkg.isc.codetidy.Utils).RunAll() even though ESLint is disabled so no reason to export (#44)
+- Fixed .js files in other namespaces' /itemsetsourcelink web app being editing during ##class(pkg.isc.codetidy.Utils).RunAll (#45)
+- Fixed .js files being re-exported without edit during ##class(pkg.isc.codetidy.Utils).RunAll() even though ESLint is disabled so no reason to export (#44)
 
 ## [1.1.5] - 2023-02-23
 
 ### Fixed
--Fixed insertion of new line even though JSON array was empty
--Fixed JSON Linting being applied to JSON arrays within arguments of a macro
+- Fixed insertion of new line even though JSON array was empty
+- Fixed JSON Linting being applied to JSON arrays within arguments of a macro
 
 ## [1.1.4] - 2023-02-07
 
 ### Fixed
--Fixed incorrect conversion of ##; comments to #; comments
--Fixed incorrect conversion of ;; comments to ; ; comments
+- Fixed incorrect conversion of ##; comments to #; comments
+- Fixed incorrect conversion of ;; comments to ; ; comments
 
 ### Added
--Added unit tests for "usemacrocomments" and "capital" configuration options
+- Added unit tests for "usemacrocomments" and "capital" configuration options
 
 ## [1.1.3] - 2023-01-31
 
