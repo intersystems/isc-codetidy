@@ -671,8 +671,9 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                 } elseif (fragment = "]") {
                     do $i(isJSON,-2)
                 }
-            } elseif (type '= "White Space") && (fragment '= ":"){
+            } elseif (type '= "White Space") && (fragment '= ":") {
                 set nextToken = ..NextNonWhitespaceToken(.tokens,line,lineTokens,pointer,.nextLine,.nextLineTokens,.nextPointer)
+                set nextType = $ListGet(nextToken, 2)
                 set pointerCopy = pointer
                 if (($listnext(lineTokens, pointerCopy, dummy)) 
                     && ((nextToken = $ListBuild("COS","JSON bracket","}"))
@@ -680,6 +681,9 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                             &&(nextToken = $ListBuild("COS","JSON bracket","{"))))) {
                     set newTokens($i(newTokens)) = newLineTokens
                     set newLineTokens = ""
+                } elseif nextType = "Comment" {
+                    set spaceToken = $ListBuild("COS", "Comment", " ")
+                    set newLineTokens = newLineTokens _ $ListBuild(spaceToken)
                 }
             }
         }
@@ -717,7 +721,7 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
         set newLineTokens = ""
         while $listnext(lineTokens, pointer, token) {
             set $ListBuild(lang, type, fragment) = token
-
+            
             #; Number of opening [ determine how many closing ] are needed
             #; to exit the array and then be outside JSON
             if token = $ListBuild("COS","JSON bracket","[") {
@@ -1208,7 +1212,13 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
 
             // Check for block statements
             set openParNoMarker = $replace(openPar, marker, "")
-            set openCount = $length(LineText, openPar) - $length(LineText, closePar)
+            // embedded html needs to omit ">" as part of tags i.e. &html< <script> should skip indentation
+            if (openParNoMarker = "&html<") && closePar = ">" {
+                set openCount = $length(LineText, "&html<") + $length("<") - 1 - $length(LineText, ">")
+            } else {
+                set openCount = $length(LineText, openPar) - $length(LineText, closePar)
+            }
+            
             if openCount > 0 {
                 if openPar '= "/*" {
                     set Handle(openParNoMarker) = $get(Handle(openParNoMarker)) + openCount
