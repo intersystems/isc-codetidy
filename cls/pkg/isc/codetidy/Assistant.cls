@@ -681,7 +681,7 @@ ClassMethod JSONLint(ByRef tokens, sourceStream As %Stream.Object, isRoutine As 
                             &&(nextToken = $ListBuild("COS","JSON bracket","{"))))) {
                     set newTokens($i(newTokens)) = newLineTokens
                     set newLineTokens = ""
-                } elseif nextType = "Comment" {
+                } elseif (nextType = "Comment") && (type '= "Comment") {
                     set spaceToken = $ListBuild("COS", "Comment", " ")
                     set newLineTokens = newLineTokens _ $ListBuild(spaceToken)
                 }
@@ -1213,12 +1213,12 @@ ClassMethod IncIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
             // Check for block statements
             set openParNoMarker = $replace(openPar, marker, "")
             // embedded html needs to omit ">" as part of tags i.e. &html< <script> should skip indentation
-            if (openParNoMarker = "&html<") && closePar = ">" {
+            if (openParNoMarker = "&html<") && (closePar = ">") {
                 set openCount = $length(LineText, "&html<") + $length("<") - 1 - $length(LineText, ">")
             } else {
                 set openCount = $length(LineText, openPar) - $length(LineText, closePar)
             }
-            
+
             if openCount > 0 {
                 if openPar '= "/*" {
                     set Handle(openParNoMarker) = $get(Handle(openParNoMarker)) + openCount
