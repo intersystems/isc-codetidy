@@ -16,7 +16,7 @@ ClassMethod ResequenceDocument(InternalName As %String, Export As %Boolean) As %
 		
 		if $isobject(class) {
 			#; Parameters
-			for list = class.Parameters, class.Properties, class.ForeignKeys, class.Indices, class.Methods, class.Queries, class.Triggers, class.Storages {
+			for list = class.Projections, class.Parameters, class.Properties, class.ForeignKeys, class.Indices, class.Methods, class.Queries, class.Triggers, class.XDatas, class.Storages {
 				set key = ""
 				for {
 					set item = list.GetNext(.key)
@@ -25,28 +25,35 @@ ClassMethod ResequenceDocument(InternalName As %String, Export As %Boolean) As %
 					if item.Name = "SrcVer" {
 						#; SrcVer to be shown at the top.
 						set weight = 0
+					} elseif ($classname(item) = "%Dictionary.ProjectionDefinition") {
+						#; Other than SrcVer Projections should come first
+						set weight = 10
 					} elseif ($classname(item) = "%Dictionary.ParameterDefinition") && (item.Name = $zconvert(item.Name,"U")) {
 						#; Mixed case parameters are sometimes used in relation to a property.
 						#; In these cases it the parameter may be kept with the property.
 						if $extract(item.Name,1,7) = "SQLDATE" {
 							#; SQLDATE parameters show after other SQL* parameters
-							set weight = 11
+							set weight = 21
 						} elseif $extract(item.Name,1,3) = "SQL" {
 							#; SQLCODE, SQLDESCRIPTION, SQLROWID are used to identify records.
-							set weight = 10
+							set weight = 20
 						} else {
-							set weight = 15
+							set weight = 25
 						}
 					} elseif ($classname(item) = "%Dictionary.ParameterDefinition") || ($classname(item) = "%Dictionary.PropertyDefinition") {
-						set weight = 20
-					} elseif ($classname(item) = "%Dictionary.ForeignKeyDefinition") {
 						set weight = 30
-					} elseif ($classname(item) = "%Dictionary.IndexDefinition") {
+					} elseif ($classname(item) = "%Dictionary.ForeignKeyDefinition") {
 						set weight = 40
-					} elseif ($classname(item) = "%Dictionary.MethodDefinition") || ($classname(item) = "%Dictionary.QueryDefinition") {
+					} elseif ($classname(item) = "%Dictionary.IndexDefinition") {
 						set weight = 50
-					} elseif ($classname(item) = "%Dictionary.TriggerDefinition") {
+					} elseif ($classname(item) = "%Dictionary.MethodDefinition") || ($classname(item) = "%Dictionary.QueryDefinition") {
 						set weight = 60
+					} elseif ($classname(item) = "%Dictionary.TriggerDefinition") {
+						set weight = 70
+					} elseif $classname(item) = "%Dictionary.XDataDefinition" {
+						set weight = 80
+					} elseif ($classname(item) = "") {
+						set weight = 90
 					} else {
 						set weight = 99
 					}

@@ -816,6 +816,10 @@ ClassMethod ParseFragmentCOSComment(ByRef last, ByRef this, ByRef next, ByRef co
 		if ##class(pkg.isc.codetidy.Utils).GetObjectScriptWhiteSpace() {
 			if $extract(conv("Frag"), 1, 2) = "//", $extract(conv("Frag"), 3) '= " " set conv("Frag") = cosComment _ " " _ $extract(conv("Frag"), 3, *)
 		}
+		// Only #; and ##; comments are allowed at start of line without indent
+		if ($extract(this("Frag")) = "#") && ($extract(conv("Frag")) '= "#") && ($extract(last("Frag")) = "") {
+			set conv("Frag") = " "_conv("Frag")
+		}
 	}
 }
 
