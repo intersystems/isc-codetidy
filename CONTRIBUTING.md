@@ -6,6 +6,10 @@ Thank you for your interest in contributing! While this project originated at In
 
 If you have made a change that you would like to contribute back to the community, please send a [GitHub Pull Request](/pull/new/main) explaining it. If your change fixes an issue that you or another user reported, please mention it in the pull request. You can find out more about pull requests [here](http://help.github.com/pull-requests/).
 
+Every pull request should include at least one entry in CHANGELOG.md - see [keepachangelog.com](https://keepachangelog.com/) for guidelines.
+
+We encourage use of [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+
 ## Coding conventions
 
 Generally speaking, just try to match the conventions you see in the code you are reading. For this project, these include:
