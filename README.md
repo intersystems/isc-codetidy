@@ -14,6 +14,10 @@ zpm "install isc.codetidy"
 ## [Documentation](documentation.md)
 See [Documentation](documentation.md)
 
+## Support
+
+If you find a bug or would like to request an enhancement, [report an issue](https://github.com/intersystems/TestCoverage/issues/new). If you have a question, post it on the [InterSystems Developer Community](https://community.intersystems.com/).
+
 ## Contributing
 Please read [contributing](https://github.com/intersystems/isc-codetidy/blob/main/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
