@@ -172,7 +172,7 @@ ClassMethod ProcessStream(ByRef instream As %AbstractStream, lang As %String = "
 	set (last("LineStripped"), conv("LineStripped")) = ""
 	set this("Indent") = 0, next("Indent") = 0
 	set this("SyntaxStream") = outstream, this("AtEnd") = 0
-	set conv("PostConditional") = 0, conv("JSSwitch") = 0, conv("JSONSwitch") = 0, conv("PatternMatch") = 0
+	set conv("PostConditional") = 0, conv("JSSwitch") = 0, conv("JSONSwitch") = 0, conv("PatternMatch") = 0, conv("MacroSwitch") = 0
 	set conv("CodeStream") = instream
 
 	if ##class(pkg.isc.codetidy.Utils).GetAddSQLPlan() {
@@ -491,6 +491,27 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 			do ..ApplyIndentation(.this, .next, .conv, "({[", "]})")
 		}
 	}
+
+	// Macro detection
+	if (this("Type") = $$$COSMacro) {
+		set conv("MacroSwitch") = 1
+	}
+
+	if (this("Type") = $$$COSDelimiter) && $get(conv("MacroSwitch")) {
+		if this("Frag") = "(" {
+			set conv("MacroDepth") = $get(conv("MacroDepth")) + 1
+		} elseif this("Frag") = ")" {
+			set conv("MacroDepth") = $get(conv("MacroDepth")) - 1
+		}
+		if '$get(conv("MacroDepth")) {
+			set conv("MacroSwitch") = 0
+		}
+	}
+
+	if ((next("Type") = $$$COSWhiteSpace) || (next("Lang") = "\n")) && $get(conv("MacroSwitch")) && '$get(conv("MacroDepth")) {
+		set conv("MacroSwitch") = 0
+	}
+
 	// Embedding Languages
 	if (this("Type") = $$$COSEmbeddingOpen) {
 		set this("Type") = last("Type")
@@ -781,7 +802,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 		set conv("Frag") = $zconvert(this("Frag"), "L")
 		
 		if ##class(pkg.isc.codetidy.Utils).GetObjectScriptWhiteSpace() {
-			if ('conv("PatternMatch")) && (conv("Frag") = ",") {
+			if ('conv("PatternMatch")) && (conv("Frag") = ",") && '$get(conv("MacroDepth")) {
 				// Include whitespace before the next parameter.
 				if next("Type") '= $$$COSWhiteSpace set conv("Frag") = conv("Frag") _ " "
 			}
