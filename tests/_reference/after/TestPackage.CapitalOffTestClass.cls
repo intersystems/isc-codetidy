@@ -9,4 +9,3 @@ Method TestCapital()
 }
 
 }
-

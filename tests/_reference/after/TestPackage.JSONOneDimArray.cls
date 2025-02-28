@@ -11,4 +11,3 @@ ClassMethod TestJSONArray() As %Status
 }
 
 }
-

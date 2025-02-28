@@ -7,4 +7,3 @@ Method TestMacroJSON()
 }
 
 }
-

@@ -50,4 +50,3 @@ Method squareArrayInCurlyArray()
 }
 
 }
-
