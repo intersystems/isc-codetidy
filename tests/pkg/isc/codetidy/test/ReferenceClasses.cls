@@ -649,7 +649,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
