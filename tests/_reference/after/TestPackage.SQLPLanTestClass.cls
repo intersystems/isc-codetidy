@@ -22,4 +22,3 @@ Method MethodA()
 }
 
 }
-

@@ -18,4 +18,3 @@ Method MethodB()
 }
 
 }
-

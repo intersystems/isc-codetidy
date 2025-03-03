@@ -51,7 +51,7 @@ Method TestResequenceOptions()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -68,7 +68,7 @@ Method TestResequenceOptions()
 	set resultClass = "TestPackage.ResequenceTestClassDisabled.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -91,7 +91,7 @@ Method TestIndentationOptions()
 	set resultClass = "TestPackage.IndentationTestClassSpaces.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -107,7 +107,7 @@ Method TestIndentationOptions()
 	set resultClass = "TestPackage.IndentationTestClassTabs.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -123,7 +123,7 @@ Method TestIndentationOptions()
 	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
 	set truthFile = referenceRoot _ "after/" _ referenceClassItemName
 	set exportFile = referenceRoot _ "compare/" _ referenceClassItemName
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -150,7 +150,7 @@ Method TestAutoTweakOptions()
 	set resultClass = "TestPackage.AutoTweakTestClassEnabled.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -167,7 +167,7 @@ Method TestAutoTweakOptions()
 	set resultClass = "TestPackage.AutoTweakTestClassDisabled.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -193,7 +193,7 @@ Method TestExpansionOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -212,7 +212,7 @@ Method TestExpansionOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -231,7 +231,7 @@ Method TestExpansionOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -258,7 +258,7 @@ Method TestCommentStyleOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -276,7 +276,7 @@ Method TestCommentStyleOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -294,7 +294,7 @@ Method TestCommentStyleOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -319,7 +319,7 @@ Method TestSQLPlanOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -337,7 +337,7 @@ Method TestSQLPlanOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -355,7 +355,7 @@ Method TestSQLPlanOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -380,7 +380,7 @@ Method TestSQLCaseOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -398,7 +398,7 @@ Method TestSQLCaseOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -416,7 +416,7 @@ Method TestSQLCaseOptions()
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -440,7 +440,7 @@ Method TestBraceOptions()
 	set resultClass = "TestPackage.BraceTestClassDisabled.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -457,7 +457,7 @@ Method TestBraceOptions()
 	set resultClass = "TestPackage.BraceTestClassEnabled.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -481,7 +481,7 @@ Method TestSpacingOptions()
 	set resultClass = "TestPackage.SpacingTestClassDisabled.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -498,7 +498,7 @@ Method TestSpacingOptions()
 	set resultClass = "TestPackage.SpacingTestClassEnabled.cls"
 	set truthFile = referenceRoot _ "after/" _ resultClass
 	set exportFile = referenceRoot _ "compare/" _ resultClass
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -523,7 +523,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -544,7 +544,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -565,7 +565,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -586,7 +586,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -607,7 +607,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -628,7 +628,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -649,7 +649,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -670,7 +670,7 @@ Method TestJSONLinting()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -695,7 +695,7 @@ Method TestHTMLIndent()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -720,7 +720,7 @@ Method TestJSIndent()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -745,7 +745,7 @@ Method TestRoutine()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -770,7 +770,7 @@ Method TestBlockComment()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -800,7 +800,7 @@ Method TestCapital()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -827,7 +827,7 @@ Method TestCapital()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -859,7 +859,7 @@ Method TestUseMacroComment()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -878,7 +878,7 @@ Method TestUseMacroComment()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -897,7 +897,7 @@ Method TestUseMacroComment()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -917,7 +917,7 @@ Method TestUseMacroComment()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -936,7 +936,7 @@ Method TestUseMacroComment()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -955,7 +955,7 @@ Method TestUseMacroComment()
 	set currentDir = ..Manager.CurrentDir
 	zwrite currentDir, referenceRoot, exportFile
 
-	// Note: this appends an extra newline at the end. "after" files need this.
+	// In pre 2024.1.2 this adds an additional newline, breaking unit tests. Local development should be against latest IRIS version.
 	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
 	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
 	if ..deleteFiles {
@@ -965,6 +965,37 @@ Method TestUseMacroComment()
 	set ^Config("CodeTidy", "tweak") = oldTweak
 	set ^Config("CodeTidy", "usemacrocomments") = oldUseMacro
 	set ^Config("CodeTidy", "coscomment") = oldCommentStyle
+}
+
+Method TestMacroMultiArg()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.MacroMultiArg.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+
+	// turn on white space tidying for function arguments
+	set oldCodeTidy = $get(^Config("CodeTidy","codeitdy"))
+	set ^Config("CodeTidy","codetidy") = 1
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set truthFile = referenceRoot _ "after/" _ referenceClassItemName
+	set exportFile = referenceRoot _ "compare/" _ referenceClassItemName
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	if oldCodeTidy '= "" {
+		set ^Config("CodeTidy", "codetidy") = oldCodeTidy
+	} else {
+		kill ^Config("CodeTidy", "codetidy")
+	}
 }
 
 Method %OnClose() As %Status
