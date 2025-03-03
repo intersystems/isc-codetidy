@@ -969,13 +969,15 @@ Method TestUseMacroComment()
 
 Method TestMacroMultiArg()
 {
-	// turn on white space tidying for function arguments
-	set oldCodeTidy = $get(^Config("CodeTidy","codeitdy"))
-	set ^Config("CodeTidy","codetidy") = 1
-
 	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
 	set referenceClassItemName = "TestPackage.MacroMultiArg.cls"
 	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+
+	// turn on white space tidying for function arguments
+	set oldCodeTidy = $get(^Config("CodeTidy","codeitdy"))
+	set ^Config("CodeTidy","codetidy") = 1
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
 
 	set truthFile = referenceRoot _ "after/" _ referenceClassItemName
 	set exportFile = referenceRoot _ "compare/" _ referenceClassItemName
