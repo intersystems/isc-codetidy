@@ -2,7 +2,7 @@
 <Export generator="IRIS" version="26">
 <Document name="isc.codetidy.ZPM"><Module>
   <Name>isc.codetidy</Name>
-  <Version>1.1.9</Version>
+  <Version>1.1.10</Version>
   <Packaging>module</Packaging>
   <Resource Name="pkg.isc.codetidy.PKG" Directory="cls" />
   <Resource Name="pkg.isc.codetidy.CodeTidy.INC" Directory="inc" />

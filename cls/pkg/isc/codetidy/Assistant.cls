@@ -246,6 +246,19 @@ ClassMethod StripCode(String As %String, Language As %String = "", SkipPar As %B
         
         set open = $find(alteredStr, openChar, 1) - 1
         while (open > 0) {
+            // check for embedded JS on this line so we do not strip ';'
+            if (Language=$$$langObjectScript) && (openChar = ";") {
+                set marker = ..GetCustomMarker(alteredStr)
+                set openJSTag = $find(alteredStr, "&js"_marker, 1)
+                if 'openJSTag set openJSTag = $find(alteredStr, "&javascript"_marker, 1)
+                if openJSTag {
+                    set closeJSTag = $find(alteredStr, ">"_$reverse(marker), openJSTag)-1
+                    if (openJSTag < open) && (open < closeJSTag) {
+                        set open = $find(alteredStr, openChar, closeJSTag)
+                        continue
+                    }
+                }
+            }
             #; Find the end
             if closeChar '= "" {
                 set close = $find(alteredStr, closeChar, open + 1) - 1
@@ -821,6 +834,19 @@ ClassMethod NextNonWhitespaceToken(ByRef tokens, line As %Integer, lineTokens As
     }
 }
 
+/// Get custom marker for embedded HTML and JS blocks
+ClassMethod GetCustomMarker(LineText As %String) As %String
+{
+    if $extract(LineText, 1, 11) = "&javascript" {
+        set marker = $piece($piece(LineText, "&javascript", 2), "<", 1)
+    } elseif $extract(LineText, 1, 3) = "&js" {
+        set marker = $piece($piece(LineText, "&js", 2), "<", 1)
+    } elseif $extract(LineText, 1, 5) = "&html" {
+        set marker = $piece($piece(LineText, "&html", 2), "<", 1)
+    }
+    return $get(marker)
+}
+
 /// Apply standard indentation to a given line of code.
 /// Note: This method is called with each line in sequence.  The Handle is used to keep track of details that effect the indentation of subsequent lines.
 ClassMethod IndentCodeLine(ByRef Handle As %Library.Binary, Language As %String, ByRef LineText As %String, ByRef Indent As %Integer, Command As %String = "", IsJSON As %Boolean = 0, ByRef marker As %String = "")
@@ -928,14 +954,8 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
             set decIndent = 0
         }
 
-        // Set custom marker for embedded block if used
-        if $extract(LineText, 1, 11) = "&javascript" {
-            set marker = $piece($piece(LineText, "&javascript", 2), "<", 1)
-        } elseif $extract(LineText, 1, 3) = "&js" {
-            set marker = $piece($piece(LineText, "&js", 2), "<", 1)
-        } elseif $extract(LineText, 1, 5) = "&html" {
-            set marker = $piece($piece(LineText, "&html", 2), "<", 1)
-        } 
+        // get custom marker for HTML and JS blocks
+        set marker = ..GetCustomMarker(LineText)
 
         set openTags = 6
         set openTags(1) = "{"
@@ -970,7 +990,7 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
 
             // check for block statements
             set openParNoMarker = $replace(openPar, marker, "")
-            if (+$get(Handle(openParNoMarker))) > 0 {
+            if ($get(Handle(openParNoMarker),0)) > 0 {
                 if openPar = "/*"{
                     set closeCount = $length(LineText, closePar) - $length(LineText, marker _ $extract(openPar, $length(marker)+1, $length(openPar)))
                 } else {
