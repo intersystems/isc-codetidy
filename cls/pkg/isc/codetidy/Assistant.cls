@@ -955,7 +955,9 @@ ClassMethod DecIndent(ByRef Handle As %Library.Binary, LineText As %String, Lang
         }
 
         // get custom marker for HTML and JS blocks
-        set marker = ..GetCustomMarker(LineText)
+        if (marker = "") {
+            set marker = ..GetCustomMarker(LineText)
+        }
 
         set openTags = 6
         set openTags(1) = "{"
