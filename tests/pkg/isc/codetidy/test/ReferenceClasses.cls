@@ -32,7 +32,6 @@ Method OnBeforeAllTests() As %Status
 	quit $$$OK
 }
 
-/*
 Method TestResequenceOptions()
 {
 	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
@@ -998,7 +997,7 @@ Method TestMacroMultiArg()
 		kill ^Config("CodeTidy", "codetidy")
 	}
 }
-*/
+
 Method TestInLineJS()
 {
 	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
