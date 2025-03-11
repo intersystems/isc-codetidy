@@ -998,6 +998,37 @@ Method TestMacroMultiArg()
 	}
 }
 
+Method TestInLineJS()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.TestInLineJS.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+
+	// turn on white space tidying for function arguments
+	set oldIndent = $get(^Config("CodeTidy","indent"))
+	set ^Config("CodeTidy","indent") = 1
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set truthFile = referenceRoot _ "after/" _ referenceClassItemName
+	set exportFile = referenceRoot _ "compare/" _ referenceClassItemName
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+
+	if oldIndent '= "" {
+		set ^Config("CodeTidy", "indent") = oldIndent
+	} else {
+		kill ^Config("CodeTidy", "indent")
+	}
+}
+
 Method %OnClose() As %Status
 {
 	do ##class(%Studio.SourceControl.Interface).SourceControlClassSet(..userSourceControl)
