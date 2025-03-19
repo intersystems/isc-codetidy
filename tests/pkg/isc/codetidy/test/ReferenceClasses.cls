@@ -1029,6 +1029,29 @@ Method TestInLineJS()
 	}
 }
 
+Method TestPreProcessorIfSpacing()
+{
+	set referenceRoot = ##class(%Library.File).NormalizeDirectory(..Manager.CurrentDir _ "/../../../../_reference")
+	set referenceClassItemName = "TestPackage.TestPreProcIf.cls"
+	set referenceClassName = referenceRoot _ "before/" _ referenceClassItemName
+
+	// turn on white space tidying for function arguments
+	do $$$AssertStatusOK($system.OBJ.Load(referenceClassName), "ck")
+	do $$$AssertStatusOK(##class(pkg.isc.codetidy.Utils).Run(referenceClassItemName))
+
+	set truthFile = referenceRoot _ "after/" _ referenceClassItemName
+	set exportFile = referenceRoot _ "compare/" _ referenceClassItemName
+
+	set currentDir = ..Manager.CurrentDir
+	zwrite currentDir, referenceRoot, exportFile
+
+	do $$$AssertStatusOK($system.OBJ.ExportUDL(referenceClassItemName, exportFile))
+	do $$$AssertFilesSame(exportFile, truthFile, "Files match: " _ referenceClassItemName)
+	if ..deleteFiles {
+		do ##class(%Library.File).Delete(exportFile)
+	}
+}
+
 Method %OnClose() As %Status
 {
 	do ##class(%Studio.SourceControl.Interface).SourceControlClassSet(..userSourceControl)
