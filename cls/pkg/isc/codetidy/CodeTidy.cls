@@ -658,11 +658,13 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 		if ##class(pkg.isc.codetidy.Utils).GetIndent() {
 			if $case(this("Frag"), "if":1, "ifdef":1, "ifndef":1, :0)  {
 				set next("Indent") = next("Indent") + 1
+				set conv("preProcIf") = $increment(conv("preProcIf"))
 			} elseif $case(this("Frag"), "else":1, "elseif":1, :0) {
 				set this("Indent") = this("Indent") - 1
 				set next("Indent") = next("Indent") + 1
 			} elseif $case(this("Frag"), "endif":1, :0) {
 				set this("Indent") = this("Indent") - 1
+				set conv("preProcIf") = $increment(conv("preProcIf"),-1)
 			}
 		}
 		quit
@@ -802,7 +804,7 @@ ClassMethod ParseFragmentCOS(ByRef last, ByRef this, ByRef next, ByRef conv)
 		set conv("Frag") = $zconvert(this("Frag"), "L")
 		
 		if ##class(pkg.isc.codetidy.Utils).GetObjectScriptWhiteSpace() {
-			if ('conv("PatternMatch")) && (conv("Frag") = ",") && '$get(conv("MacroDepth")) {
+			if ('conv("PatternMatch")) && (conv("Frag") = ",") && '$get(conv("MacroDepth")) && '$get(conv("preProcIf")) {
 				// Include whitespace before the next parameter.
 				if next("Type") '= $$$COSWhiteSpace set conv("Frag") = conv("Frag") _ " "
 			}
